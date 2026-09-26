@@ -2,12 +2,14 @@
 SCRIPT="$HOME/bin/huya.sh"
 
 PS3="选择主播: "
-select NAME in "不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4"; do
+select NAME in "不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事"; do
   case "$REPLY" in
     1) exec "$SCRIPT" "https://live.douyin.com/933572413882" best ;;
     2) exec "$SCRIPT" "huya.com/791120" best ;;
     3) exec "$SCRIPT" "huya.com/52009" best ;;
     4) exec "$HOME/bin/cz_radio.sh" ;;
+    5) exec "$SCRIPT" "https://live.douyin.com/401770194155" best ;;
+    6) exec "$SCRIPT" "huya.com/660006" best ;;
     *) echo "无效选项"; continue ;;
   esac
 done
