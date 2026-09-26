@@ -140,6 +140,7 @@ function showFrame(src){
 
 function play(ch){
   cur=ch;
+  try{ history.replaceState(null,'','#'+ch.id); }catch(e){}
   markActive(ch.id);
   nowEl.innerHTML=ch.em+' '+ch.n+' <small>'+KIND[ch.k].t+'</small>';
   document.title='▶ '+ch.n+' ・ stream 播放台';
@@ -194,6 +195,15 @@ addEventListener('keydown',e=>{
   const i=parseInt(e.key,10);
   if(i>=1&&i<=CHANNELS.length) play(CHANNELS[i-1]);
 });
+
+function fromHash(){
+  const h=decodeURIComponent((location.hash||'').replace(/^#/,'')).trim().toLowerCase();
+  if(!h) return;
+  const ch=CHANNELS.find(c=>c.id===h)||CHANNELS[(parseInt(h,10)||0)-1];
+  if(CHANNELS.includes(ch)) play(ch);
+}
+fromHash();
+addEventListener('hashchange',fromHash);
 </script>
 </body>
 </html>
