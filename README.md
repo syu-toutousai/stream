@@ -2,6 +2,14 @@
 
 本机终端播放快捷菜单：一键选择主播或电台，基于 [streamlink](https://streamlink.github.io/) + [mpv](https://mpv.io/) 播放。
 
+## 网页版（异构实现）
+
+同一份菜单的 GitHub Pages 网页版：<https://syu-toutousai.github.io/stream/>（源码即本仓库 `index.html`）
+
+- 虎牙 / 电台：页内直接嵌入官方网页播放器；
+- 抖音：官方禁止第三方网页内嵌（CSP / X-Frame-Options），改为浏览器小窗播放（等价终端版的 mpv 弹窗）；
+- 快捷键 `1–6` 选台，与终端菜单顺序一致；从主页 <https://syu-toutousai.github.io/> 也可进入。
+
 ## 菜单内容
 
 | 选项 | 名称 | 类型 | 实现 |
@@ -14,6 +22,7 @@
 ## 文件说明
 
 - `stream`：选择菜单入口，`exec` 到对应播放脚本。
+- `index.html`：GitHub Pages 网页版播放台（终端菜单的异构实现，见上）。
 - `huya.sh`：虎牙 / 抖音直播稳定播放（断线自动重连；`mpv` 按 `q` 退出或 `Ctrl+C` 结束不重连）。
 - `cz_radio.sh`：潮州交通音乐广播 FM91.4，流地址含时效 token，脚本会自动重新取流续播。
 

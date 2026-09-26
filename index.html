@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stream ・ 直播 / 电台播放台（网页版）</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#1c2333;--sub:#5b6478;--acc:#7a4ff7;--acc2:#eef1ff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",sans-serif;
+background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+header{background:linear-gradient(135deg,#33418f,#7a4ff7 55%,#7a4ff7);color:#fff;padding:34px 20px 48px;text-align:center}
+header h1{font-size:24px;letter-spacing:2px}
+header p{opacity:.92;font-size:13.5px;margin-top:9px;line-height:1.8}
+header .back{display:inline-block;margin-top:12px;color:#fff;font-size:12.5px;opacity:.9;text-decoration:none;
+border:1px solid rgba(255,255,255,.5);border-radius:99px;padding:3px 13px}
+header .back:hover{background:rgba(255,255,255,.14)}
+main{max-width:1080px;width:100%;margin:-28px auto 0;padding:0 16px 40px;flex:1}
+.board{display:grid;grid-template-columns:312px 1fr;gap:16px;align-items:start}
+.card{background:var(--card);border-radius:20px;box-shadow:0 6px 24px rgba(30,40,90,.12);padding:16px}
+.card h2{font-size:14.5px;margin:2px 4px 12px;color:var(--sub);font-weight:700}
+.item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#f7f8fc;
+border:2px solid transparent;border-radius:14px;padding:10px 12px;margin-bottom:8px;cursor:pointer;
+font-family:inherit;color:var(--ink);transition:.15s}
+.item:hover{border-color:#cfd6f7}
+.item.active{border-color:var(--acc);background:var(--acc2)}
+.item .em{font-size:22px;line-height:1}
+.item .nm{font-size:14.5px;font-weight:700;line-height:1.4}
+.item .meta{font-size:11.5px;color:var(--sub)}
+.item .k{margin-left:auto;font-size:11px;font-weight:700;border-radius:99px;padding:3px 9px;background:#e7eaf6;color:var(--sub)}
+.item .k.huya{background:#fff2e0;color:#b26a00}
+.item .k.douyin{background:#ffe8f0;color:#d6336c}
+.item .k.radio{background:#e6f7ef;color:#0b8a5c}
+.hint{font-size:11.5px;color:var(--sub);text-align:center;margin-top:6px;line-height:1.8}
+.stage{position:relative;width:100%;aspect-ratio:16/9;background:#0b0f1c;border-radius:14px;overflow:hidden}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.stage .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+color:#8b93b0;gap:10px;text-align:center;padding:20px}
+.stage .ph .big{font-size:46px;line-height:1}
+.stage .ph p{font-size:13px;line-height:1.9;max-width:430px}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 2px 0}
+.toolbar .now{font-size:13.5px;font-weight:700;margin-right:auto}
+.toolbar .now small{color:var(--sub);font-weight:400;margin-left:6px;font-size:12px}
+.btn{border:0;border-radius:10px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;
+font-family:inherit;background:var(--acc);color:#fff}
+.btn.ghost{background:var(--acc2);color:var(--acc)}
+.btn:hover{filter:brightness(.96)}
+.btn:active{transform:translateY(1px)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.note{font-size:12px;color:var(--sub);line-height:1.9;margin-top:14px;background:#f7f8fc;border-radius:12px;padding:10px 14px}
+footer{text-align:center;font-size:12px;color:var(--sub);padding:18px;line-height:1.9}
+footer a{color:var(--sub)}
+@media (max-width:780px){.board{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>stream ・ 直播 / 电台播放台</h1>
+  <p>终端 <b>stream</b> 命令的网页异构版 —— 同一份菜单，选台即播<br>
+  虎牙 / 电台在页内官方播放器播放，抖音以浏览器小窗播放（官方禁止外站嵌入）</p>
+  <a class="back" href="../">← 返回档案首页</a>
+</header>
+
+<main>
+  <div class="board">
+    <section class="card">
+      <h2>选择主播 / 电台（键盘 1–6）</h2>
+      <div id="menu"></div>
+      <div class="hint">与终端版 menu 顺序一致</div>
+    </section>
+
+    <section class="card">
+      <h2>播放区</h2>
+      <div class="stage" id="stage">
+        <div class="ph">
+          <div class="big">📺</div>
+          <p>从左侧选一个主播或电台，或直接按 1–6。<br>
+          虎牙与电台在页内播放；抖音会弹出一个小窗（等价于终端版的 mpv 窗口）。</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="now" id="now">未选择 <small>—</small></div>
+        <button class="btn ghost" id="btnReload">重连</button>
+        <button class="btn ghost" id="btnFs">全屏</button>
+        <button class="btn" id="btnOpen">新窗口打开</button>
+      </div>
+      <div class="note" id="note">
+        终端版实现：<b>streamlink + mpv</b>（断线自动重连）｜ 网页版实现：直接嵌入官方网页播放器，断流由官方播放器自愈，卡住时点「重连」即可。
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  源仓库：<a href="https://github.com/syu-toutousai/stream" rel="noopener">stream</a> ·
+  <a href="https://github.com/syu-toutousai/syu-toutousai.github.io" rel="noopener">syu-toutousai.github.io</a><br>
+  终端版 streamlink + mpv ｜ 网页版 GitHub Pages 静态托管
+</footer>
+
+<script>
+const CHANNELS=[
+  {id:'buqiuren',n:'不求人',k:'douyin',em:'📱',url:'https://live.douyin.com/933572413882'},
+  {id:'suk',n:'Suk',k:'huya',em:'🎮',url:'https://www.huya.com/791120'},
+  {id:'yuguo',n:'雨果',k:'huya',em:'🎮',url:'https://www.huya.com/52009'},
+  {id:'radio',n:'潮州交通音乐广播 FM91.4',k:'radio',em:'📻',url:'https://radio5.cn/embed/1719',page:'https://radio5.cn/play/radio/czbtv-traffic-music-radio'},
+  {id:'wanyu',n:'晚玉阿',k:'douyin',em:'📱',url:'https://live.douyin.com/401770194155'},
+  {id:'pel',n:'PEL和平精英赛事',k:'huya',em:'🏆',url:'https://www.huya.com/660006'}
+];
+const KIND={huya:{t:'虎牙直播',c:'huya'},douyin:{t:'抖音直播',c:'douyin'},radio:{t:'电台直播',c:'radio'}};
+const $=s=>document.querySelector(s);
+const menu=$('#menu'),stage=$('#stage'),nowEl=$('#now'),noteEl=$('#note');
+let cur=null;
+
+CHANNELS.forEach((ch,i)=>{
+  const b=document.createElement('button');
+  b.className='item';
+  b.dataset.id=ch.id;
+  b.innerHTML='<span class="em">'+ch.em+'</span>'+
+    '<span><span class="nm">'+ch.n+'</span><br><span class="meta">'+KIND[ch.k].t+'</span></span>'+
+    '<span class="k '+KIND[ch.k].c+'">'+(i+1)+'</span>';
+  b.addEventListener('click',()=>play(ch));
+  menu.appendChild(b);
+});
+
+function markActive(id){
+  document.querySelectorAll('.item').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
+}
+
+function showFrame(src){
+  stage.innerHTML='';
+  const f=document.createElement('iframe');
+  f.setAttribute('allow','autoplay; encrypted-media; fullscreen; picture-in-picture');
+  f.setAttribute('allowfullscreen','');
+  f.setAttribute('referrerpolicy','no-referrer');
+  f.src=src;
+  stage.appendChild(f);
+  return f;
+}
+
+function play(ch){
+  cur=ch;
+  markActive(ch.id);
+  nowEl.innerHTML=ch.em+' '+ch.n+' <small>'+KIND[ch.k].t+'</small>';
+  document.title='▶ '+ch.n+' ・ stream 播放台';
+  if(ch.k==='douyin'){
+    openDouyin(ch);
+    return;
+  }
+  showFrame(ch.url);
+  noteEl.textContent = ch.k==='radio'
+    ? '电台使用 radio5.cn 官方嵌入播放器（与终端版同一路流，含时效 token，由官方播放器自动续播）：载入后点一次它自带的播放键即可。'
+    : '虎牙为官方网页播放器内嵌，断流由官方播放器自动处理；若画面卡住可点「重连」。';
+}
+
+function douyinPopup(ch){
+  return window.open(ch.url,'stream-'+ch.id,'width=460,height=820,menubar=no,toolbar=no,location=yes,status=no');
+}
+
+function openDouyin(ch){
+  stage.innerHTML='<div class="ph"><div class="big">📱</div>'+
+    '<p>抖音官方禁止第三方网页内嵌直播（CSP / X-Frame-Options），网页版改用<b>小窗播放</b>：'+
+    '点击后会在一个小窗口里打开官方直播页，效果等同终端版的 mpv 弹窗。</p>'+
+    '<div class="actions"><button class="btn" id="dzWin">🪟 小窗播放</button>'+
+    '<button class="btn ghost" id="dzTab">↗ 新标签页打开</button></div></div>';
+  const w=douyinPopup(ch);
+  noteEl.textContent = w
+    ? '已弹出小窗播放「'+ch.n+'」（再次选择会复用同一窗口）。若小窗被浏览器拦截，请点面板里的「小窗播放」按钮。'
+    : '浏览器拦截了自动弹窗：请点面板中的「小窗播放」按钮。';
+  $('#dzWin').addEventListener('click',()=>douyinPopup(ch));
+  $('#dzTab').addEventListener('click',()=>window.open(ch.url,'_blank','noopener'));
+}
+
+$('#btnReload').addEventListener('click',()=>{
+  if(!cur) return;
+  if(cur.k==='douyin'){ openDouyin(cur); return; }
+  const f=stage.querySelector('iframe');
+  if(f){ f.src=cur.url+(cur.url.includes('?')?'&':'?')+'t='+Date.now(); }
+});
+
+$('#btnFs').addEventListener('click',()=>{
+  const el=$('#stage');
+  if(document.fullscreenElement){ document.exitFullscreen(); }
+  else if(el.requestFullscreen){ el.requestFullscreen(); }
+});
+
+$('#btnOpen').addEventListener('click',()=>{
+  if(!cur) return;
+  window.open(cur.page||cur.url,'_blank','noopener');
+});
+
+addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  const i=parseInt(e.key,10);
+  if(i>=1&&i<=CHANNELS.length) play(CHANNELS[i-1]);
+});
+</script>
+</body>
+</html>
