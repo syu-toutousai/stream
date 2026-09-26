@@ -6,9 +6,9 @@
 
 同一份菜单的 GitHub Pages 网页版：<https://syu-toutousai.github.io/stream/>（源码即本仓库 `index.html`）
 
-- 虎牙 / 电台：页内直接嵌入官方网页播放器；
-- 抖音：官方禁止第三方网页内嵌（CSP / X-Frame-Options），改为浏览器小窗播放（等价终端版的 mpv 弹窗）；
-- 快捷键 `1–6` 选台，与终端菜单顺序一致；从主页 <https://syu-toutousai.github.io/> 也可进入。
+- 点击菜单（或按 `1–6`、深链 `#suk` / `#radio` 等）会弹出一个**无地址栏的独立播放窗口**，与终端版「选台即开 mpv 窗口」对应；
+- 虎牙 / 抖音 / 电台（radio5.cn 官方播放器）一律弹窗播放；电台窗口内需点一次它自带的播放键；
+- 同名窗口自动复用；弹窗被拦截时页面状态栏会给出直达链接；从主页 <https://syu-toutousai.github.io/> 也可进入。
 
 ## 菜单内容
 
