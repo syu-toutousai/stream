@@ -67,7 +67,7 @@ footer a{color:var(--sub)}
     <h2>说明</h2>
     <ul>
       <li><b>弹窗即播</b>：虎牙 / 抖音 / 电台一律在独立窗口中播放官方网页播放器，窗口尺寸铺满屏幕、隐藏地址栏与工具栏；关闭本页不影响播放窗口，再次选择同一项会复用已有窗口。</li>
-      <li><b>电台 FM91.4</b>：radio5.cn 官方播放器，进窗口后点一下它自带的播放键即可（浏览器自动播放策略限制）。</li>
+      <li><b>电台 FM91.4</b>：radio5.cn 官方播放器，进窗口后点一下它自带的播放键即可（浏览器自动播放策略限制）；再次点击本项会强制刷新播放窗口，重新取流。该台北京时间 <b>01:00–06:00 停播</b>，停播时官方源无流。</li>
       <li><b>弹窗被拦截</b>：请允许本站弹窗（点菜单时会即时弹出）；若被拦截，下方状态栏会给出直达链接。</li>
       <li><b>断流恢复</b>：各官方播放器自带重连；终端版 streamlink + mpv 的重连逻辑不适用于网页版。</li>
     </ul>
@@ -115,10 +115,24 @@ function windowFeatures(){
   return 'popup=yes,width='+w+',height='+h+',left=0,top=0,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes';
 }
 
+const wins={};
+
 function openPlayerWindow(ch){
-  const w=window.open(ch.page||ch.url,'stream-'+ch.id,windowFeatures());
+  const name='stream-'+ch.id;
+  const url=ch.page||ch.url;
+  let w=wins[ch.id];
+  if(w&&!w.closed){
+    if(ch.k==='radio'){
+      try{ w.location.href=url; }catch(e){ w=null; }
+    }
+  }else{
+    w=null;
+  }
+  if(!w){
+    w=window.open(url,name,windowFeatures());
+    if(w) wins[ch.id]=w;
+  }
   if(w){
-    try{ w.opener=null; }catch(e){}
     try{ w.focus(); }catch(e){}
   }
   return w;
@@ -133,7 +147,9 @@ function play(ch){
   if(w){
     statusEl.classList.remove('warn');
     statusEl.innerHTML='🪟 已弹出「'+ch.n+'」播放窗口'+
-      (ch.k==='radio'?' —— 请在窗口里点一下它自带的播放键。':'（再次选择会复用同一窗口）。');
+      (ch.k==='radio'
+        ? ' —— 请在窗口里点一下它自带的播放键；提示“播放源失效”时再点一次本项，会自动重开窗口换新线路。'
+        : '（再次选择会复用同一窗口）。');
   }else{
     statusEl.classList.add('warn');
     statusEl.innerHTML='⚠️ 浏览器拦截了弹窗：请允许本站弹窗后重试，或 '+
