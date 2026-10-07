@@ -5,7 +5,8 @@ PS3="选择主播: "
 select NAME in "不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事"; do
   case "$REPLY" in
     1) exec "$SCRIPT" "https://live.douyin.com/933572413882" best ;;
-    2) exec "$SCRIPT" "huya.com/791120" best ;;
+    2) exec "$SCRIPT" "huya.com/791120" best "2310:1080" \
+         '--vf=lavfi=[split=2[a][b];[a]scale=2310:1080[x];[b]crop=392:230:0:776,scale=472:277[c];[x][c]overlay=0:776]' ;;
     3) exec "$SCRIPT" "huya.com/52009" best ;;
     4) exec "$HOME/bin/cz_radio.sh" ;;
     5) exec "$SCRIPT" "https://live.douyin.com/401770194155" best ;;
