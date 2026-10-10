@@ -23,6 +23,7 @@
 | 5 | 晚玉阿 | 抖音直播 | `streamlink` → `mpv` |
 | 6 | PEL和平精英赛事 | 虎牙直播 | `streamlink` → `mpv` |
 | 7 | 清宁 | 抖音直播 | `streamlink` → `mpv` |
+| 8 | Japanese Everyday | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
 
 ## 文件说明
 
@@ -30,6 +31,10 @@
 - `index.html`：GitHub Pages 网页版播放台（终端菜单的异构实现，见上）。
 - `huya.sh`：虎牙 / 抖音直播稳定播放（断线自动重连；`mpv` 按 `q` 退出或 `Ctrl+C` 结束不重连）。
 - `cz_radio.sh`：潮州交通音乐广播 FM91.4，流地址含时效 token，脚本会自动重新取流续播。
+- `yt_random.sh`：随机播放 YouTube 频道视频（默认 [@JapaneseEveryday](https://www.youtube.com/@JapaneseEveryday)）。
+  视频列表缓存在 `~/.cache/stream-yt/`（24 小时），每次启动 `mpv --shuffle` 随机排序；加载失败的视频自动跳过。
+  播放进度按视频记录在 `~/.cache/stream-yt/watch_later/`：`q` 退出后下次先续播上次中断的视频，其余仍随机，
+  随机遇到看过的视频从上次进度继续（不想要先续播可加 `--playlist-start=no`）。
 
 ## 依赖
 
@@ -38,6 +43,7 @@
 - `bash`
 - `mpv`：播放器
 - `streamlink`：虎牙 / 抖音拉流
+- `yt-dlp`：YouTube 频道视频枚举与播放（选项 8）
 - `curl` + `python3`：`cz_radio.sh` 获取并解析流地址
 - `grep`：脚本内部提取页面 nonce（一般系统自带）
 
@@ -50,11 +56,12 @@
 
 - 直播：可访问 `huya.com`、`live.douyin.com`
 - 电台：可访问 `radio5.cn`、`ytcastmp3.radio.cn`
+- YouTube（选项 8）：可访问 `youtube.com`（本机经 Clash TUN 代理，行情不稳时会加载失败，`mpv` 会自动跳到下一个）
 
 以 Arch Linux 为例安装：
 
 ```bash
-sudo pacman -S mpv streamlink curl python
+sudo pacman -S mpv streamlink yt-dlp curl python
 ```
 
 其他发行版用对应的包管理器安装同名软件即可。
@@ -63,8 +70,8 @@ sudo pacman -S mpv streamlink curl python
 
 ```bash
 mkdir -p ~/bin
-cp stream huya.sh cz_radio.sh ~/bin/
-chmod +x ~/bin/stream ~/bin/huya.sh ~/bin/cz_radio.sh
+cp stream huya.sh cz_radio.sh yt_random.sh ~/bin/
+chmod +x ~/bin/stream ~/bin/huya.sh ~/bin/cz_radio.sh ~/bin/yt_random.sh
 
 # 确保 ~/bin 在 PATH 中（写入 ~/.bashrc 或 ~/.zshrc）：
 export PATH="$HOME/bin:$PATH"
@@ -75,6 +82,7 @@ export PATH="$HOME/bin:$PATH"
 ```bash
 stream
 # 1) 不求人  2) Suk  3) 雨果  4) 潮州交通音乐广播FM91.4
+# 5) 晚玉阿  6) PEL和平精英赛事  7) 清宁  8) Japanese Everyday(随机日语)
 ```
 
 选择后前台播放：`mpv` 按 `q` 退出，或 `Ctrl+C` 结束。
