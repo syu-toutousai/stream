@@ -5,6 +5,7 @@ SCRIPT="$HOME/bin/huya.sh"
 RADIO_SCRIPT="$HOME/bin/cz_radio.sh"
 YT_SCRIPT="$HOME/bin/yt_random.sh"
 NHK_SCRIPT="$HOME/bin/nhk_radio.sh"
+YNT_SCRIPT="$HOME/bin/ynt_radio.sh"
 UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
 RADIO_REF="https://radio5.cn/play/radio/czbtv-traffic-music-radio"
 # NHKワールド・ラジオ日本(日本語): r1 主源, media2 备用
@@ -12,6 +13,12 @@ NHK_URLS=(
   "https://masterpl.hls.nhkworld.jp/hls/r1/live/master.m3u8"
   "https://nhkworld-radio.nhkworld.jp/hls/live/nhkworld-radio-media2/index.m3u8"
 )
+# ゆめのたね放送局 六色频道: 0) 的二级菜单(1-6)で選局する
+YNT_URL_BASE="https://d2kz66ab55q61t.cloudfront.net"
+YNT_KEYS=(red orange yellow green blue purple)
+YNT_NAMES=(レッド オレンジ イエロー グリーン ブルー パープル)
+YNT_COLORS=($'\033[38;5;196m' $'\033[38;5;208m' $'\033[38;5;220m' $'\033[38;5;46m' $'\033[38;5;33m' $'\033[38;5;135m')
+COLOR_RESET=$'\033[0m'
 
 NAMES=("不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事" "清宁" "Japanese Everyday(おまかせ日本語)" "NHKワールド・ラジオ日本")
 # 探测目标:huya:<房间号> / douyin:<web_rid> / radio / nhk / vod(不探测)
@@ -65,6 +72,18 @@ probe_nhk() {
   echo "つながらない"
 }
 
+probe_ynt() { # 六色チャンネルのどれかが配信中なら「やってる」
+  local d ch
+  d=$(mktemp -d)
+  for ch in "${YNT_KEYS[@]}"; do
+    ( [ "$(curl -s --max-time 6 --max-filesize 8192 -o /dev/null -w '%{http_code}' -A "$UA" \
+        "$YNT_URL_BASE/$ch")" = 200 ] && touch "$d/up" ) &
+  done
+  wait
+  if [ -e "$d/up" ]; then echo "やってる"; else echo "つながらない"; fi
+  rm -rf "$d"
+}
+
 probe_status() {
   case "$1" in
     huya:*)   probe_huya   "${1#huya:}" ;;
@@ -81,6 +100,7 @@ build_labels() {
     [ "$key" = vod ] && continue
     probe_status "$key" > "$d/${key//:/_}" &
   done
+  probe_ynt > "$d/ynt" &   # 0) ゆめのたね放送局(六色のいずれか)
   wait
   LABELS=()
   for i in "${!NAMES[@]}"; do
@@ -93,28 +113,57 @@ build_labels() {
       LABELS+=("${NAMES[$i]} [$st]")
     fi
   done
+  YNT_LABEL=$(cat "$d/ynt" 2>/dev/null)
+  [ -z "$YNT_LABEL" ] && YNT_LABEL="わからない"
   rm -rf "$d"
+}
+
+choose_yumenotane() { # 0) ゆめのたね放送局: 六色から選局して再生
+  local reply i
+  while :; do
+    echo "ゆめのたね放送局のチャンネル:"
+    for i in "${!YNT_NAMES[@]}"; do
+      printf ' %d) %s%s%s\n' "$((i + 1))" "${YNT_COLORS[$i]}" "${YNT_NAMES[$i]}" "$COLOR_RESET"
+    done
+    read -r -p "どの色にする? (q で戻る): " reply
+    case "$reply" in
+      [1-6]) "$YNT_SCRIPT" "${YNT_KEYS[$((reply - 1))]}"; return ;;
+      q|Q) return ;;
+      "") ;;
+      *) echo "そんなのないよ" ;;
+    esac
+  done
 }
 
 PS3="どれにする? (q でやめる): "
 while :; do
   echo "どれがやってるか見てみるね..."
   build_labels
-  select NAME in "${LABELS[@]}"; do
+  while :; do
+    for i in "${!LABELS[@]}"; do
+      printf ' %d) %s\n' "$((i + 1))" "${LABELS[$i]}"
+    done
+    printf ' 0) ゆめのたね放送局(色を選ぶ) [%s]\n' "$YNT_LABEL"
+    read -r -p "$PS3" REPLY
     case "$REPLY" in
-      1) "$SCRIPT" "https://live.douyin.com/933572413882" best ;;
-      2) "$SCRIPT" "huya.com/791120" best "2385:1080" \
-           '--vf=lavfi=[split=2[a][b];[a]scale=2385:1080[x];[b]crop=334:188:0:892,scale=415:234[c];[x][c]overlay=0:846]' ;;
-      3) "$SCRIPT" "huya.com/52009" best ;;
-      4) "$RADIO_SCRIPT" ;;
-      5) "$SCRIPT" "https://live.douyin.com/401770194155" best ;;
-      6) "$SCRIPT" "huya.com/660006" best ;;
-      7) "$SCRIPT" "https://live.douyin.com/618168030518" best ;;
-      8) "$YT_SCRIPT" "https://www.youtube.com/@JapaneseEveryday" ;;
-      9) "$NHK_SCRIPT" ;;
-      q|Q) exit 0 ;;
-      *) echo "そんなのないよ"; continue ;;
+      [1-9]|0|q|Q) break ;;
+      "") ;;
+      *) echo "そんなのないよ" ;;
     esac
-    break   # 播放结束 → 回到外层循环,重新探测并显示菜单
   done
+  case "$REPLY" in
+    1) "$SCRIPT" "https://live.douyin.com/933572413882" best ;;
+    2) "$SCRIPT" "huya.com/791120" best "2385:1080" \
+         '--vf=lavfi=[split=2[a][b];[a]scale=2385:1080[x];[b]crop=334:188:0:892,scale=415:234[c];[x][c]overlay=0:846]' ;;
+    3) "$SCRIPT" "huya.com/52009" best ;;
+    4) "$RADIO_SCRIPT" ;;
+    5) "$SCRIPT" "https://live.douyin.com/401770194155" best ;;
+    6) "$SCRIPT" "huya.com/660006" best ;;
+    7) "$SCRIPT" "https://live.douyin.com/618168030518" best ;;
+    8) "$YT_SCRIPT" "https://www.youtube.com/@JapaneseEveryday" ;;
+    9) "$NHK_SCRIPT" ;;
+    0) choose_yumenotane ;;
+    q|Q) exit 0 ;;
+  esac
+  # 播放结束(或二级菜单返回) → 外层循环继续,重新探测并显示菜单
 done
