@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # 潮州交通音乐广播 FM91.4
 # 播放源: radio5.cn -> ytcastmp3.radio.cn（地址含时效 token，自动刷新续播）
+# 前台(菜单)模式: mpv 按 q 正常退出后返回菜单；后台服务模式(systemd)：断线自动重连
 REFERER="https://radio5.cn/play/radio/czbtv-traffic-music-radio"
 
 [ -z "$INVOCATION_ID" ] && systemctl --user stop cz-radio.service 2>/dev/null
@@ -26,6 +27,10 @@ while true; do
   fi
   echo "[$(date '+%F %T')] playing: $url"
   mpv --no-video --really-quiet --cache=yes --audio-display=no "$url"
+  ec=$?
+  if [ -z "$INVOCATION_ID" ] && [ "$ec" -eq 0 ]; then
+    break   # 前台菜单模式:按 q 正常退出 → 返回菜单(后台服务模式仍持续重连)
+  fi
   echo "[$(date '+%F %T')] stream ended, reconnecting..."
   sleep 3
 done

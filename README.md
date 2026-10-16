@@ -24,13 +24,15 @@
 | 6 | PEL和平精英赛事 | 虎牙直播 | `streamlink` → `mpv` |
 | 7 | 清宁 | 抖音直播 | `streamlink` → `mpv` |
 | 8 | Japanese Everyday | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
+| 9 | NHKワールド・ラジオ日本 | 电台（日本） | nhkworld.jp 官方 HLS 流 → `mpv` |
 
 ## 文件说明
 
-- `stream`：选择菜单入口，`exec` 到对应播放脚本。
+- `stream`：选择菜单入口。每次显示菜单前并行探测各直播源在线状态并标注（VOD 不探测）；播放结束返回菜单，输入 `q` 才退出。
 - `index.html`：GitHub Pages 网页版播放台（终端菜单的异构实现，见上）。
 - `huya.sh`：虎牙 / 抖音直播稳定播放（断线自动重连；`mpv` 按 `q` 退出或 `Ctrl+C` 结束不重连）。
-- `cz_radio.sh`：潮州交通音乐广播 FM91.4，流地址含时效 token，脚本会自动重新取流续播。
+- `cz_radio.sh`：潮州交通音乐广播 FM91.4，流地址含时效 token，脚本会自动重新取流续播；前台（菜单）模式下 `mpv` 按 `q` 退出则返回菜单，后台 `cz-radio.service` 断线仍自动续播。
+- `nhk_radio.sh`：NHKワールド・ラジオ日本（日本語同时配信），官方 HLS 固定地址、无 token；r1 主源取不到时自动回落到备用流，断线自动重连；`mpv` 按 `q` 退出返回菜单。
 - `yt_random.sh`：随机播放 YouTube 频道视频（默认 [@JapaneseEveryday](https://www.youtube.com/@JapaneseEveryday)）。
   视频列表缓存在 `~/.cache/stream-yt/`（24 小时），每次启动 `mpv --shuffle` 随机排序；加载失败的视频自动跳过。
   播放进度按视频记录在 `~/.cache/stream-yt/watch_later/`：`q` 退出后下次先续播上次中断的视频，其余仍随机，
@@ -56,6 +58,7 @@
 
 - 直播：可访问 `huya.com`、`live.douyin.com`
 - 电台：可访问 `radio5.cn`、`ytcastmp3.radio.cn`
+- 电台（NHK）：可访问 `nhkworld.jp`（Clash 线路不稳时脚本会自动重连/落备流）
 - YouTube（选项 8）：可访问 `youtube.com`（本机经 Clash TUN 代理，行情不稳时会加载失败，`mpv` 会自动跳到下一个）
 
 以 Arch Linux 为例安装：
@@ -70,8 +73,8 @@ sudo pacman -S mpv streamlink yt-dlp curl python
 
 ```bash
 mkdir -p ~/bin
-cp stream huya.sh cz_radio.sh yt_random.sh ~/bin/
-chmod +x ~/bin/stream ~/bin/huya.sh ~/bin/cz_radio.sh ~/bin/yt_random.sh
+cp stream huya.sh cz_radio.sh nhk_radio.sh yt_random.sh ~/bin/
+chmod +x ~/bin/stream ~/bin/huya.sh ~/bin/cz_radio.sh ~/bin/nhk_radio.sh ~/bin/yt_random.sh
 
 # 确保 ~/bin 在 PATH 中（写入 ~/.bashrc 或 ~/.zshrc）：
 export PATH="$HOME/bin:$PATH"
@@ -81,11 +84,12 @@ export PATH="$HOME/bin:$PATH"
 
 ```bash
 stream
-# 1) 不求人  2) Suk  3) 雨果  4) 潮州交通音乐广播FM91.4
-# 5) 晚玉阿  6) PEL和平精英赛事  7) 清宁  8) Japanese Everyday(随机日语)
+# 1) 不求人 [在线]  2) Suk [在线]  3) 雨果 [在线]  4) 潮州交通音乐广播FM91.4 [在线]
+# 5) 晚玉阿 [未开播]  6) PEL和平精英赛事 [在线]  7) 清宁 [未开播]  8) Japanese Everyday(随机日语)  9) NHKワールド・ラジオ日本 [在线]
 ```
 
-选择后前台播放：`mpv` 按 `q` 退出，或 `Ctrl+C` 结束。
+- 启动（及每次播放结束返回菜单）时自动探测各直播源，菜单项后标注 `[在线]` / `[未开播]` / `[停播]` / `[未知]`；VOD 类（选项 8）不探测、不标注。
+- 选择后前台播放：`mpv` 按 `q` 结束播放并回到菜单；在菜单输入 `q` 退出整个脚本；`Ctrl+C` 直接结束脚本。
 
 ### 电台后台常驻
 

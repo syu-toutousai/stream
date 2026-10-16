@@ -1,18 +1,120 @@
 #!/usr/bin/env bash
+# 直播菜单:每次进入(启动/播放结束)并行探测各直播源在线状态并显示在菜单中;
+# 播放结束后返回菜单,只有输入 q 才退出。VOD(点播)类型不探测、不显示状态。
 SCRIPT="$HOME/bin/huya.sh"
+RADIO_SCRIPT="$HOME/bin/cz_radio.sh"
+YT_SCRIPT="$HOME/bin/yt_random.sh"
+NHK_SCRIPT="$HOME/bin/nhk_radio.sh"
+UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+RADIO_REF="https://radio5.cn/play/radio/czbtv-traffic-music-radio"
+# NHKワールド・ラジオ日本(日本語): r1 主源, media2 备用
+NHK_URLS=(
+  "https://masterpl.hls.nhkworld.jp/hls/r1/live/master.m3u8"
+  "https://nhkworld-radio.nhkworld.jp/hls/live/nhkworld-radio-media2/index.m3u8"
+)
 
-PS3="选择主播: "
-select NAME in "不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事" "清宁" "Japanese Everyday(随机日语)"; do
-  case "$REPLY" in
-    1) exec "$SCRIPT" "https://live.douyin.com/933572413882" best ;;
-    2) exec "$SCRIPT" "huya.com/791120" best "2385:1080" \
-         '--vf=lavfi=[split=2[a][b];[a]scale=2385:1080[x];[b]crop=392:230:0:776,scale=487:286[c];[x][c]overlay=0:776]' ;;
-    3) exec "$SCRIPT" "huya.com/52009" best ;;
-    4) exec "$HOME/bin/cz_radio.sh" ;;
-    5) exec "$SCRIPT" "https://live.douyin.com/401770194155" best ;;
-    6) exec "$SCRIPT" "huya.com/660006" best ;;
-    7) exec "$SCRIPT" "https://live.douyin.com/618168030518" best ;;
-    8) exec "$HOME/bin/yt_random.sh" "https://www.youtube.com/@JapaneseEveryday" ;;
-    *) echo "无效选项"; continue ;;
+NAMES=("不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事" "清宁" "Japanese Everyday(おまかせ日本語)" "NHKワールド・ラジオ日本")
+# 探测目标:huya:<房间号> / douyin:<web_rid> / radio / nhk / vod(不探测)
+KEYS=(douyin:933572413882 huya:791120 huya:52009 radio douyin:401770194155 huya:660006 douyin:618168030518 vod nhk)
+
+probe_huya() { # $1=房间号
+  local out
+  out=$(curl -sL --compressed --max-time 6 -A "$UA" "https://www.huya.com/$1" \
+        | grep -aoE 'liveStatus-(on|off)' | head -1)
+  case "$out" in
+    liveStatus-on)  echo "やってる" ;;
+    liveStatus-off) echo "まだやってない" ;;
+    *)              echo "わからない" ;;
   esac
+}
+
+probe_douyin() { # $1=web_rid
+  local st
+  st=$(curl -sL --compressed --max-time 6 -A "$UA" "https://live.douyin.com/$1" \
+       | grep -aoE '\\"status_str\\":\\"[0-9]+' | head -1 | grep -aoE '[0-9]+$')
+  case "$st" in
+    2)  echo "やってる" ;;   # 2=直播中
+    "") echo "わからない" ;;
+    *)  echo "まだやってない" ;; # 4=已结束 等
+  esac
+}
+
+probe_radio() {
+  local h ck page nonce url code
+  h=$(TZ=Asia/Shanghai date +%-H)
+  if [ -n "$h" ] && [ "$h" -ge 1 ] && [ "$h" -lt 6 ]; then
+    echo "お休み"; return   # 北京时间 01:00-06:00 官方源停播
+  fi
+  ck=$(mktemp)
+  page=$(curl -s --max-time 6 -c "$ck" -A "$UA" "$RADIO_REF")
+  nonce=$(grep -oE '"nonce":"[a-f0-9]+"' <<<"$page" | head -1 | cut -d'"' -f4)
+  url=$(curl -s --max-time 6 -b "$ck" -A "$UA" -H "X-WP-Nonce: $nonce" -H "Referer: $RADIO_REF" \
+        "https://radio5.cn/api/play/play/1719?type=post" \
+        | python3 -c "import sys,json;print(json.load(sys.stdin).get('stream_url',''))" 2>/dev/null)
+  rm -f "$ck"
+  if [ -z "$url" ]; then echo "つながらない"; return; fi
+  code=$(curl -s --max-time 5 --max-filesize 8192 -o /dev/null -w '%{http_code}' "$url")
+  [ "$code" = 200 ] && echo "やってる" || echo "つながらない"
+}
+
+probe_nhk() {
+  local u
+  for u in "${NHK_URLS[@]}"; do
+    [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 -A "$UA" "$u")" = 200 ] && { echo "やってる"; return; }
+  done
+  echo "つながらない"
+}
+
+probe_status() {
+  case "$1" in
+    huya:*)   probe_huya   "${1#huya:}" ;;
+    douyin:*) probe_douyin "${1#douyin:}" ;;
+    radio)    probe_radio ;;
+    nhk)      probe_nhk ;;
+  esac
+}
+
+build_labels() {
+  local d key i st
+  d=$(mktemp -d)
+  for key in "${KEYS[@]}"; do
+    [ "$key" = vod ] && continue
+    probe_status "$key" > "$d/${key//:/_}" &
+  done
+  wait
+  LABELS=()
+  for i in "${!NAMES[@]}"; do
+    key="${KEYS[$i]}"
+    if [ "$key" = vod ]; then
+      LABELS+=("${NAMES[$i]}")                # VOD 类型:不探测、不显示状态
+    else
+      st=$(cat "$d/${key//:/_}" 2>/dev/null)
+      [ -z "$st" ] && st="わからない"
+      LABELS+=("${NAMES[$i]} [$st]")
+    fi
+  done
+  rm -rf "$d"
+}
+
+PS3="どれにする? (q でやめる): "
+while :; do
+  echo "どれがやってるか見てみるね..."
+  build_labels
+  select NAME in "${LABELS[@]}"; do
+    case "$REPLY" in
+      1) "$SCRIPT" "https://live.douyin.com/933572413882" best ;;
+      2) "$SCRIPT" "huya.com/791120" best "2385:1080" \
+           '--vf=lavfi=[split=2[a][b];[a]scale=2385:1080[x];[b]crop=334:188:0:892,scale=415:234[c];[x][c]overlay=0:846]' ;;
+      3) "$SCRIPT" "huya.com/52009" best ;;
+      4) "$RADIO_SCRIPT" ;;
+      5) "$SCRIPT" "https://live.douyin.com/401770194155" best ;;
+      6) "$SCRIPT" "huya.com/660006" best ;;
+      7) "$SCRIPT" "https://live.douyin.com/618168030518" best ;;
+      8) "$YT_SCRIPT" "https://www.youtube.com/@JapaneseEveryday" ;;
+      9) "$NHK_SCRIPT" ;;
+      q|Q) exit 0 ;;
+      *) echo "そんなのないよ"; continue ;;
+    esac
+    break   # 播放结束 → 回到外层循环,重新探测并显示菜单
+  done
 done
