@@ -26,6 +26,9 @@
 | 8 | Japanese Everyday | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
 | 9 | NHKワールド・ラジオ日本 | 电台（日本） | nhkworld.jp 官方 HLS 流 → `mpv` |
 | あ | Japanese Girls Interview | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
+| い | M（A妹） | 抖音直播 | `streamlink` → `mpv` |
+| う | Jiro, just Japanese | YouTube 日语播客 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
+| え | Bite size Japanese | YouTube 日语播客 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
 | 0 | ゆめのたね放送局 | 电台（日本・トーク） | 六色频道二级菜单（`1`–`6` 彩色选台）→ CloudFront 官方流 → `mpv` |
 
 ## 文件说明
@@ -36,7 +39,7 @@
 - `cz_radio.sh`：潮州交通音乐广播 FM91.4，流地址含时效 token，脚本会自动重新取流续播；前台（菜单）模式下 `mpv` 按 `q` 退出则返回菜单，后台 `cz-radio.service` 断线仍自动续播。
 - `nhk_radio.sh`：NHKワールド・ラジオ日本（日本語同时配信），官方 HLS 固定地址、无 token；r1 主源取不到时自动回落到备用流，断线自动重连；`mpv` 按 `q` 退出返回菜单。
 - `ynt_radio.sh`：ゆめのたね放送局（日本的互联网社区电台，以谈话节目为主），六色频道（`red`/`orange`/`yellow`/`green`/`blue`/`purple`）直连 CloudFront 官方流，固定地址、无 token；断线自动重连，`mpv` 按 `q` 退出返回菜单。
-- `yt_random.sh`：随机播放 YouTube 频道视频（选项 8 为 [@JapaneseEveryday](https://www.youtube.com/@JapaneseEveryday)，选项 あ 为 [@Japanesegirlsinterview](https://www.youtube.com/@Japanesegirlsinterview)）。
+- `yt_random.sh`：随机播放 YouTube 频道视频（选项 8 为 [@JapaneseEveryday](https://www.youtube.com/@JapaneseEveryday)，选项 あ 为 [@Japanesegirlsinterview](https://www.youtube.com/@Japanesegirlsinterview)，选项 う 为 [@JiroJapanese](https://www.youtube.com/@JiroJapanese)，选项 え 为 [Bite Size Japanese](https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw)）。
   视频列表缓存在 `~/.cache/stream-yt/`（24 小时），每次启动 `mpv --shuffle` 随机排序；加载失败的视频自动跳过。
   播放进度按视频记录在 `~/.cache/stream-yt/watch_later/`：`q` 退出后下次先续播上次中断的视频，其余仍随机，
   随机遇到看过的视频从上次进度继续（不想要先续播可加 `--playlist-start=no`）。
@@ -48,7 +51,7 @@
 - `bash`
 - `mpv`：播放器
 - `streamlink`：虎牙 / 抖音拉流
-- `yt-dlp`：YouTube 频道视频枚举与播放（选项 8 / あ）
+- `yt-dlp`：YouTube 频道视频枚举与播放（选项 8 / あ / う / え）
 - `curl` + `python3`：`cz_radio.sh` 获取并解析流地址
 - `grep`：脚本内部提取页面 nonce（一般系统自带）
 
@@ -63,7 +66,7 @@
 - 电台：可访问 `radio5.cn`、`ytcastmp3.radio.cn`
 - 电台（NHK）：可访问 `nhkworld.jp`（Clash 线路不稳时脚本会自动重连/落备流）
 - 电台（ゆめのたね）：可访问 `d2kz66ab55q61t.cloudfront.net`（六色频道均为全球可达的官方流）
-- YouTube（选项 8 / あ）：可访问 `youtube.com`（本机经 Clash TUN 代理，行情不稳时会加载失败，`mpv` 会自动跳到下一个）
+- YouTube（选项 8 / あ / う / え）：可访问 `youtube.com`（本机经 Clash TUN 代理，行情不稳时会加载失败，`mpv` 会自动跳到下一个）
 
 以 Arch Linux 为例安装：
 
@@ -90,10 +93,10 @@ export PATH="$HOME/bin:$PATH"
 stream
 # 1) 不求人 [在线]  2) Suk [在线]  3) 雨果 [在线]  4) 潮州交通音乐广播FM91.4 [在线]
 # 5) 晚玉阿 [未开播]  6) PEL和平精英赛事 [在线]  7) 清宁 [未开播]  8) Japanese Everyday(随机日语)  9) NHKワールド・ラジオ日本 [在线]
-# あ) Japanese Girls Interview(随机日语)  0) ゆめのたね放送局(色を選ぶ) [在线]
+# あ) Japanese Girls Interview(随机日语)  う) Jiro, just Japanese(随机日语)  え) Bite size Japanese(随机日语)  0) ゆめのたね放送局(色を選ぶ) [在线]
 ```
 
-- 启动（及每次播放结束返回菜单）时自动探测各直播源，菜单项后标注 `[在线]` / `[未开播]` / `[停播]` / `[未知]`；VOD 类（选项 8 / あ）不探测、不标注。
+- 启动（及每次播放结束返回菜单）时自动探测各直播源，菜单项后标注 `[在线]` / `[未开播]` / `[停播]` / `[未知]`；VOD 类（选项 8 / あ / う / え）不探测、不标注。
 - 选项 0：先进入六色频道二级菜单（`1`–`6` 即选即播，颜色仅作显示；`q` 返回主菜单）；六色中任一频道在线，主菜单该项即标注 `[在线]`。
 - 选择后前台播放：`mpv` 按 `q` 结束播放并回到菜单；在菜单输入 `q` 退出整个脚本；`Ctrl+C` 直接结束脚本。
 

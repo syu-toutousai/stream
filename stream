@@ -20,9 +20,11 @@ YNT_NAMES=(レッド オレンジ イエロー グリーン ブルー パープ�
 YNT_COLORS=($'\033[38;5;196m' $'\033[38;5;208m' $'\033[38;5;220m' $'\033[38;5;46m' $'\033[38;5;33m' $'\033[38;5;135m')
 COLOR_RESET=$'\033[0m'
 
-NAMES=("不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事" "清宁" "Japanese Everyday(おまかせ日本語)" "NHKワールド・ラジオ日本" "Japanese Girls Interview(おまかせ)")
+NAMES=("不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事" "清宁" "Japanese Everyday(おまかせ日本語)" "NHKワールド・ラジオ日本" "Japanese Girls Interview(おまかせ)" "M（A妹）" "Jiro, just Japanese" "Bite size Japanese")
 # 探测目标:huya:<房间号> / douyin:<web_rid> / radio / nhk / vod(不探测)
-KEYS=(douyin:933572413882 huya:791120 huya:52009 radio douyin:401770194155 huya:660006 douyin:618168030518 vod nhk vod)
+KEYS=(douyin:933572413882 huya:791120 huya:52009 radio douyin:401770194155 huya:660006 douyin:618168030518 vod nhk vod douyin:856781106190 vod vod)
+# 9番目以降のカナ選択肢(9→あ, 10→い, 11→う, 12→え)
+KANA=(あ い う え)
 
 probe_huya() { # $1=房间号
   local out
@@ -141,8 +143,8 @@ while :; do
   build_labels
   while :; do
     for i in "${!LABELS[@]}"; do
-      if [ "$i" -eq 9 ]; then
-        printf ' あ) %s\n' "${LABELS[$i]}"
+      if [ "$i" -ge 9 ]; then
+        printf ' %s) %s\n' "${KANA[$((i - 9))]}" "${LABELS[$i]}"
       else
         printf ' %d) %s\n' "$((i + 1))" "${LABELS[$i]}"
       fi
@@ -150,7 +152,7 @@ while :; do
     printf ' 0) ゆめのたね放送局(色を選ぶ) [%s]\n' "$YNT_LABEL"
     read -r -p "$PS3" REPLY
     case "$REPLY" in
-      [1-9]|0|あ|a|A|q|Q) break ;;
+      [1-9]|0|あ|a|A|い|i|I|う|u|U|え|e|E|q|Q) break ;;
       "") ;;
       *) echo "そんなのないよ" ;;
     esac
@@ -168,6 +170,9 @@ while :; do
     9) "$NHK_SCRIPT" ;;
     0) choose_yumenotane ;;
     あ|a|A) "$YT_SCRIPT" "https://www.youtube.com/@Japanesegirlsinterview" ;;
+    い|i|I) "$SCRIPT" "https://live.douyin.com/856781106190" best ;;
+    う|u|U) "$YT_SCRIPT" "https://www.youtube.com/@JiroJapanese" ;;
+    え|e|E) "$YT_SCRIPT" "https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw" ;;
     q|Q) exit 0 ;;
   esac
   # 播放结束(或二级菜单返回) → 外层循环继续,重新探测并显示菜单
