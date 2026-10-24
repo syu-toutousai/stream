@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # 直播菜单:每次进入(启动/播放结束)并行探测各直播源在线状态并显示在菜单中;
-# 播放结束后返回菜单,只有输入 q 才退出。VOD(点播)类型不探测、不显示状态。
+# 播放结束后返回菜单,只有输入 q 才退出。VOD(点播)类型不探测。
+# 状态は色分け: Live=緑 / VOD=シアン / 再生不可=灰 / 判定不能=黄。
 SCRIPT="$HOME/bin/huya.sh"
 RADIO_SCRIPT="$HOME/bin/cz_radio.sh"
 YT_SCRIPT="$HOME/bin/yt_random.sh"
@@ -19,6 +20,10 @@ YNT_KEYS=(red orange yellow green blue purple)
 YNT_NAMES=(レッド オレンジ イエロー グリーン ブルー パープル)
 YNT_COLORS=($'\033[38;5;196m' $'\033[38;5;208m' $'\033[38;5;220m' $'\033[38;5;46m' $'\033[38;5;33m' $'\033[38;5;135m')
 COLOR_RESET=$'\033[0m'
+COLOR_LIVE=$'\033[1;32m'      # 再生可(Live)
+COLOR_VOD=$'\033[1;36m'       # 再生可(VOD)
+COLOR_OFF=$'\033[2;37m'       # 再生不可
+COLOR_UNKNOWN=$'\033[1;33m'   # 判定不能
 
 NAMES=("不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事" "清宁" "Japanese Everyday(おまかせ日本語)" "NHKワールド・ラジオ日本" "Japanese Girls Interview(おまかせ)" "M（A妹）" "Jiro, just Japanese" "Bite size Japanese")
 # 探测目标:huya:<房间号> / douyin:<web_rid> / radio / nhk / vod(不探测)
@@ -95,6 +100,14 @@ probe_status() {
   esac
 }
 
+status_color() { # $1=状態 → 色コード
+  case "$1" in
+    やってる)   printf '%s' "$COLOR_LIVE" ;;
+    わからない) printf '%s' "$COLOR_UNKNOWN" ;;
+    *)          printf '%s' "$COLOR_OFF" ;;
+  esac
+}
+
 build_labels() {
   local d key i st
   d=$(mktemp -d)
@@ -108,15 +121,16 @@ build_labels() {
   for i in "${!NAMES[@]}"; do
     key="${KEYS[$i]}"
     if [ "$key" = vod ]; then
-      LABELS+=("${NAMES[$i]}")                # VOD 类型:不探测、不显示状态
+      LABELS+=("${COLOR_VOD}${NAMES[$i]} [VOD]${COLOR_RESET}")   # VOD 类型:不探测、VOD 色
     else
       st=$(cat "$d/${key//:/_}" 2>/dev/null)
       [ -z "$st" ] && st="わからない"
-      LABELS+=("${NAMES[$i]} [$st]")
+      LABELS+=("$(status_color "$st")${NAMES[$i]} [$st]${COLOR_RESET}")
     fi
   done
   YNT_LABEL=$(cat "$d/ynt" 2>/dev/null)
   [ -z "$YNT_LABEL" ] && YNT_LABEL="わからない"
+  YNT_COLOR=$(status_color "$YNT_LABEL")
   rm -rf "$d"
 }
 
@@ -149,7 +163,7 @@ while :; do
         printf ' %d) %s\n' "$((i + 1))" "${LABELS[$i]}"
       fi
     done
-    printf ' 0) ゆめのたね放送局(色を選ぶ) [%s]\n' "$YNT_LABEL"
+    printf ' 0) ゆめのたね放送局(色を選ぶ) %s[%s]%s\n' "$YNT_COLOR" "$YNT_LABEL" "$COLOR_RESET"
     read -r -p "$PS3" REPLY
     case "$REPLY" in
       [1-9]|0|あ|a|A|い|i|I|う|u|U|え|e|E|q|Q) break ;;
