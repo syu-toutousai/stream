@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stream player</title>
+<style>
+:root{--bar:#111528;--line:#232946;--ink:#e9ecf5;--sub:#9aa3c7;--acc:#7a4ff7}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;background:#0b0d17;color:var(--ink);
+font-family:"Hiragino Sans","Noto Sans CJK JP","Yu Gothic",sans-serif}
+#bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bar);
+border-bottom:1px solid var(--line);flex:0 0 auto;min-height:46px}
+#bar .dot{width:9px;height:9px;border-radius:50%;background:var(--acc);flex:0 0 auto;
+box-shadow:0 0 10px var(--acc)}
+#bar .tt{min-width:0;display:flex;flex-direction:column;gap:1px}
+#barTitle{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#barSub{font-size:11px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bar .sp{margin-left:auto}
+#bar button,#bar a{font:inherit;font-size:11.5px;font-weight:700;border-radius:99px;padding:5px 12px;
+border:1px solid var(--line);background:#1a2040;color:var(--ink);cursor:pointer;text-decoration:none;white-space:nowrap}
+#bar button:hover,#bar a:hover{background:#232b55}
+#stage{flex:1;min-height:0;position:relative;overflow:auto}
+.stage-fill{position:absolute;inset:0}
+.stage-fill iframe,.stage-fill #yt{width:100%;height:100%;border:0;display:block}
+.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+color:var(--sub);font-size:13px;text-align:center;padding:24px;line-height:1.9}
+.ynt-wrap{max-width:680px;margin:0 auto;padding:24px 20px 40px}
+.ynt-now{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;margin-bottom:14px}
+.ynt-now .dot{width:12px;height:12px;border-radius:50%;background:#666;flex:0 0 auto}
+.ynt-now small{font-size:11.5px;font-weight:400;color:var(--sub);margin-left:auto;text-align:right}
+#audio{width:100%;margin:4px 0 18px;accent-color:var(--acc)}
+.colors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cbtn{font:inherit;font-size:13px;font-weight:800;border:0;border-radius:12px;padding:14px 8px;
+background:var(--c);color:#fff;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.cbtn:hover{transform:translateY(-1px)}
+.cbtn.on{box-shadow:0 0 0 3px #fff,0 0 18px rgba(255,255,255,.35)}
+.ynt-hint{font-size:11.5px;color:var(--sub);line-height:1.9;margin-top:15px}
+.ynt-hint a{color:#a99bff}
+.ynt-err{color:#ff8787}
+@media(max-width:520px){.colors{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header id="bar">
+  <span class="dot"></span>
+  <div class="tt"><span id="barTitle">stream player</span><span id="barSub">読み込み中…</span></div>
+  <button id="shuffle" type="button" hidden>🔀 シャッフル</button>
+  <a id="ext" target="_blank" rel="noopener" hidden>公式 ↗</a>
+</header>
+<div id="stage"><div class="loading">読み込み中…</div></div>
+<script>
+const $=s=>document.querySelector(s);
+const stage=$('#stage'), barTitle=$('#barTitle'), barSub=$('#barSub'),
+      shuffleBtn=$('#shuffle'), extLink=$('#ext');
+const qs=new URLSearchParams(location.search);
+const type=qs.get('type')||'';
+const name=qs.get('name')||'';
+const YNT=[
+  {key:'red',label:'レッド',color:'#e03131'},
+  {key:'orange',label:'オレンジ',color:'#f08c00'},
+  {key:'yellow',label:'イエロー',color:'#f2c200',dark:true},
+  {key:'green',label:'グリーン',color:'#2f9e44'},
+  {key:'blue',label:'ブルー',color:'#1c7ed6'},
+  {key:'purple',label:'パープル',color:'#9c36b5'}
+];
+const YNT_BASE='https://d2kz66ab55q61t.cloudfront.net/';
+
+function setBar(title,sub,ext){
+  barTitle.textContent=title||'stream player';
+  barSub.textContent=sub||'';
+  if(ext){ extLink.href=ext; extLink.hidden=false; }
+}
+function showError(msg){
+  stage.innerHTML='';
+  const d=document.createElement('div');
+  d.className='loading';
+  d.textContent=msg;
+  stage.appendChild(d);
+}
+function validId(v){ return typeof v==='string'&&/^[A-Za-z0-9_-]{6,80}$/.test(v); }
+
+function initYnt(color){
+  const active=YNT.some(c=>c.key===color)?color:'red';
+  setBar('ゆめのたね放送局','24時間生放送 · 色を選んでください','https://www.yumenotane.jp/');
+  stage.innerHTML='<div class="ynt-wrap">'+
+    '<div class="ynt-now"><span class="dot" id="yntDot"></span><span id="yntName"></span><small id="yntState">接続中…</small></div>'+
+    '<audio id="audio" controls autoplay preload="none"></audio>'+
+    '<div class="colors" id="colors"></div>'+
+    '<p class="ynt-hint" id="yntHint">色を選ぶと即座に切り替わります。音が出ないときは再生ボタンを押してください。</p>'+
+    '<p class="ynt-hint">配信: <a href="https://d2kz66ab55q61t.cloudfront.net/" target="_blank" rel="noopener">CloudFront 公式ストリーム</a> · '+
+    '<a href="https://www.yumenotane.jp/" target="_blank" rel="noopener">公式サイト</a></p>'+
+    '</div>';
+  const audio=$('#audio'), colors=$('#colors'), dot=$('#yntDot'),
+        yname=$('#yntName'), state=$('#yntState'), hint=$('#yntHint');
+  const buttons={};
+  YNT.forEach(c=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='cbtn';
+    b.style.setProperty('--c',c.color);
+    if(c.dark) b.style.color='#201a00';
+    b.textContent=c.label;
+    b.addEventListener('click',()=>setChannel(c.key));
+    colors.appendChild(b);
+    buttons[c.key]=b;
+  });
+  function setChannel(key){
+    const info=YNT.find(c=>c.key===key)||YNT[0];
+    audio.src=YNT_BASE+info.key;
+    audio.play().catch(()=>{ state.textContent='自動再生がブロックされました。▶ を押してください。'; });
+    dot.style.background=info.color;
+    yname.textContent=info.label;
+    state.textContent='接続中…';
+    state.classList.remove('ynt-err');
+    hint.textContent='色を選ぶと即座に切り替わります。音が出ないときは再生ボタンを押してください。';
+    Object.keys(buttons).forEach(k=>buttons[k].classList.toggle('on',k===info.key));
+    document.title='▶ '+info.label+' ・ ゆめのたね放送局';
+    try{ history.replaceState(null,'','?type=ynt&color='+info.key); }catch(e){}
+  }
+  audio.addEventListener('playing',()=>{ state.textContent='再生中'; state.classList.remove('ynt-err'); });
+  audio.addEventListener('waiting',()=>{ state.textContent='バッファリング…'; });
+  audio.addEventListener('stalled',()=>{ state.textContent='接続を待っています…'; });
+  audio.addEventListener('error',()=>{
+    state.textContent='接続できません';
+    state.classList.add('ynt-err');
+    hint.textContent='配信に接続できませんでした。しばらくしてから色を選び直してください。';
+  });
+  window.setYntChannel=setChannel;
+  setChannel(active);
+}
+
+function initNhk(){
+  setBar('NHKワールド・ラジオ日本','日本語 同時配信 · 公式 HLS','https://www3.nhk.or.jp/nhkworld/ja/live_radio/');
+  stage.innerHTML='<div class="ynt-wrap">'+
+    '<div class="ynt-now"><span class="dot" id="dot"></span><span>NHKワールド・ラジオ日本</span><small id="state">接続中…</small></div>'+
+    '<audio id="audio" controls autoplay preload="none"></audio>'+
+    '<p class="ynt-hint" id="hint">日本語の同時配信です。音が出ないときは再生ボタンを押してください。</p>'+
+    '<p class="ynt-hint">配信: 公式 HLS（r1 主源 → media2 备用）· '+
+    '<a href="https://www3.nhk.or.jp/nhkworld/ja/live_radio/" target="_blank" rel="noopener">NHK 公式ページ</a></p>'+
+    '</div>';
+  const audio=$('#audio'), dot=$('#dot'), state=$('#state'), hint=$('#hint');
+  const official='https://www3.nhk.or.jp/nhkworld/ja/live_radio/';
+  const URLS=[
+    'https://masterpl.hls.nhkworld.jp/hls/r1/live/master.m3u8',
+    'https://nhkworld-radio.nhkworld.jp/hls/live/nhkworld-radio-media2/index.m3u8'
+  ];
+  let idx=0, hls=null;
+  dot.style.background='#1c7ed6';
+  function setState(t,err){
+    state.textContent=t;
+    state.classList.toggle('ynt-err',!!err);
+  }
+  function failAll(){
+    setState('接続できません',true);
+    hint.innerHTML='配信に接続できませんでした。しばらくしてから再読み込みするか、'+
+      '<a href="'+official+'" target="_blank" rel="noopener">NHK 公式ページ</a>で再生してください。';
+  }
+  function tryPlay(){
+    audio.play().catch(()=>{ setState('自動再生がブロックされました。▶ を押してください。'); });
+  }
+  function attach(){
+    const url=URLS[idx];
+    if(window.Hls&&Hls.isSupported()){
+      if(hls){ try{ hls.destroy(); }catch(e){} hls=null; }
+      hls=new Hls({enableWorker:true});
+      hls.on(Hls.Events.ERROR,(e,d)=>{
+        if(!d||!d.fatal) return;
+        if(idx<URLS.length-1){ idx++; setState('备用流に切り替え中…'); attach(); }
+        else failAll();
+      });
+      hls.on(Hls.Events.MANIFEST_PARSED,()=>{ setState('再生準備中…'); tryPlay(); });
+      hls.loadSource(url);
+      hls.attachMedia(audio);
+    }else if(audio.canPlayType('application/vnd.apple.mpegurl')){
+      audio.src=url;
+      tryPlay();
+    }else{
+      failAll();
+    }
+  }
+  audio.addEventListener('playing',()=>setState('再生中'));
+  audio.addEventListener('waiting',()=>setState('バッファリング…'));
+  audio.addEventListener('stalled',()=>setState('接続を待っています…'));
+  audio.addEventListener('error',()=>{ if(!hls) failAll(); });
+  if(window.Hls&&window.Hls.isSupported()) attach();
+  else if(audio.canPlayType('application/vnd.apple.mpegurl')) attach();
+  else{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js';
+    s.onload=()=>{
+      if(window.Hls&&window.Hls.isSupported()) attach();
+      else if(audio.canPlayType('application/vnd.apple.mpegurl')) attach();
+      else failAll();
+    };
+    s.onerror=()=>{
+      if(audio.canPlayType('application/vnd.apple.mpegurl')) attach();
+      else failAll();
+    };
+    document.head.appendChild(s);
+  }
+  document.title='▶ NHKワールド・ラジオ日本';
+}
+
+function initYtPlaylist(list,title){
+  if(!validId(list)){ showError('YouTube の再生リスト ID が不正です。'); return; }
+  const label=title||'YouTube';
+  setBar(label,'YouTube · 上传列表随机播放','https://www.youtube.com/playlist?list='+encodeURIComponent(list));
+  stage.innerHTML='<div class="stage-fill"><div id="yt"></div></div>'+
+    '<div class="loading" id="ytLoading">YouTube プレーヤーを読み込み中…</div>';
+  let player=null, done=false;
+  const finish=()=>{ done=true; const el=$('#ytLoading'); if(el) el.remove(); };
+  window.onYouTubeIframeAPIReady=()=>{
+    const loading=$('#ytLoading');
+    if(loading) loading.textContent='プレーヤーを準備中…';
+    player=new YT.Player('yt',{
+      width:'100%',height:'100%',
+      playerVars:{listType:'playlist',list:list,autoplay:1,rel:0,playsinline:1,origin:location.origin},
+      events:{
+        onReady:e=>{
+          finish();
+          shuffleBtn.hidden=false;
+          shuffleBtn.onclick=()=>{ try{ player.setShuffle(true); player.nextVideo(); }catch(x){} };
+          try{ e.target.setShuffle(true); }catch(x){}
+          try{ e.target.playVideo(); }catch(x){}
+        },
+        onError:e=>{ barSub.textContent='YouTube の再生エラー (code '+e.data+')'; }
+      }
+    });
+  };
+  if(window.YT&&window.YT.Player) window.onYouTubeIframeAPIReady();
+  else{
+    const s=document.createElement('script');
+    s.src='https://www.youtube.com/iframe_api';
+    s.onerror=()=>{
+      if(done) return;
+      finish();
+      stage.innerHTML='<div class="stage-fill"><iframe src="https://www.youtube.com/embed/videoseries?list='+
+        encodeURIComponent(list)+'&autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
+    };
+    document.head.appendChild(s);
+  }
+  document.title='▶ '+label+' ・ YouTube';
+}
+
+function initYtLive(v,title){
+  if(!validId(v)){ showError('YouTube の動画 ID が不正です。'); return; }
+  const label=title||'YouTube LIVE';
+  setBar(label,'YouTube 直播','https://www.youtube.com/watch?v='+encodeURIComponent(v));
+  stage.innerHTML='<div class="stage-fill"><iframe src="https://www.youtube.com/embed/'+
+    encodeURIComponent(v)+'?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
+  document.title='▶ '+label+' ・ YouTube LIVE';
+}
+
+if(type==='ynt') initYnt(qs.get('color')||'red');
+else if(type==='nhk') initNhk();
+else if(type==='ytplaylist') initYtPlaylist(qs.get('list'),name);
+else if(type==='ytlive') initYtLive(qs.get('v'),name);
+else showError('播放タイプが指定されていません。stream のメニューから開いてください。');
+</script>
+</body>
+</html>
