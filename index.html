@@ -26,14 +26,28 @@ font-family:inherit;color:var(--ink);transition:.15s}
 .item:hover{border-color:#cfd6f7}
 .item.active{border-color:var(--acc);background:var(--acc2)}
 .item .em{font-size:22px;line-height:1}
-.item .nm{font-size:14.5px;font-weight:700;line-height:1.4}
-.item .meta{font-size:11.5px;color:var(--sub)}
-.item .k{margin-left:auto;font-size:11px;font-weight:700;border-radius:99px;padding:3px 9px;background:#e7eaf6;color:var(--sub)}
-.item .k.huya{background:#fff2e0;color:#b26a00}
-.item .k.douyin{background:#ffe8f0;color:#d6336c}
-.item .k.radio{background:#e6f7ef;color:#0b8a5c}
-.item .k.yt{background:#ffe8e8;color:#c92a2a}
+.item .txt{flex:1;min-width:0}
+.item .nm{display:block;font-size:14.5px;font-weight:700;line-height:1.4}
+.item .meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;color:var(--sub)}
+.item .k{margin-left:8px;font-size:11px;font-weight:700;border-radius:99px;padding:3px 9px;background:#e7eaf6;color:var(--sub)}
+.st{font-size:10px;font-weight:700;border-radius:99px;padding:2px 7px;white-space:nowrap}
+.st.live{background:#e6f7ef;color:#0b8a5c}
+.st.vod{background:#e0f7fa;color:#0b7285}
+.st.off{background:#eceff3;color:#697386}
+.st.unknown{background:#fff8e1;color:#a16207}
+.st.checking{background:#e7f5ff;color:#1971c2}
 .hint{font-size:11.5px;color:var(--sub);text-align:center;margin-top:12px;line-height:1.8}
+.legend{display:flex;align-items:center;flex-wrap:wrap;gap:7px 13px;margin-top:12px;padding-top:12px;
+border-top:1px solid #eef0f6;font-size:10.5px;color:var(--sub)}
+.legend .lg{display:inline-flex;align-items:center;gap:5px}
+.legend .dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.legend .dot.live{background:#0b8a5c}
+.legend .dot.vod{background:#0b7285}
+.legend .dot.off{background:#697386}
+.legend .dot.unknown{background:#a16207}
+.legend button{font:inherit;font-size:10.5px;font-weight:700;color:var(--sub);background:#fff;
+border:1px solid #d7dceb;border-radius:99px;padding:3px 10px;cursor:pointer}
+.legend button:hover{background:#f3f5fb}
 .status{font-size:12.5px;color:var(--sub);line-height:1.9;margin:0 2px 16px;background:var(--card);
 border-radius:12px;padding:11px 15px;box-shadow:0 6px 24px rgba(30,40,90,.12)}
 .status.warn{color:#a35200;background:#fff8ee}
@@ -63,6 +77,13 @@ footer a{color:var(--sub)}
     <h2>見たいもの・聞きたいものを選ぶ（キー 1–9 / あ–お / 0。押すか触れると、別の窓が開きます）</h2>
     <div class="menu" id="menu"></div>
     <div class="hint">文字の画面版と同じ並び · 同じ名の窓は使い回し · #suk / #radio / #nhk / #ynt-red で直に開けます</div>
+    <div class="legend">
+      <span class="lg"><i class="dot live"></i>いま見られる生</span>
+      <span class="lg"><i class="dot vod"></i>いつでも見られるもの（VOD）</span>
+      <span class="lg"><i class="dot off"></i>いまは見られない生</span>
+      <span class="lg"><i class="dot unknown"></i>この場では確かめられない生</span>
+      <button type="button" id="recheck">確かめ直す</button>
+    </div>
   </section>
 
   <div class="status" id="status">上のどれかを選ぶと、別の窓が開きます。#radio なら潮州 FM91.4 が開きます。</div>
@@ -71,6 +92,7 @@ footer a{color:var(--sub)}
     <h2>知っておいてほしいこと</h2>
     <ul>
       <li><b>窓を開けば、そのまま流れる</b>：虎牙・抖音・音の流れ・YouTube は、どれも別の窓で流れます。この頁を閉じても流れは止まりません。同じものを選び直すと、開いている窓をそのまま使います。</li>
+      <li><b>色の意味</b>：<b>青</b>はいつでも見られるもの（VOD、8 / あ / う / え）で、確かめません。<b>緑</b>はいま見られる生、<b>灰</b>はいまは見られない生、<b>黄</b>は生だが、この場からは確かめられないものです。ブラウザの仕組みで他の場所の中身は読めないため、自動で確かめられるのは NHK と ゆめのたね だけです。ほかの生は窓を開いて確かめてください。「確かめ直す」でまた確かめられます。</li>
       <li><b>音の流れ</b>：<b>FM91.4</b> は radio5.cn の本家の窓（中国の時計で <b>01:00–06:00</b> は休み）。<b>NHKワールド・ラジオ日本</b> はこの場の HLS の窓（本家 r1 の流れ → media2 の控え）。<b>ゆめのたね放送局</b> はこの場の六つの色の窓で、色を押すとその場で切り替わります。</li>
       <li><b>YouTube</b>：8 / あ / う / え は、その人が上げたものの並びから、はじめに一つを気まぐれに選んで流します（「🔀 選び直す」で別のものを選べます）。お は TBS NEWS DIG の一日中の生。ウェブ版は並びを貯めず、どこまで見たかも覚えません（それは文字の画面版の yt-dlp の仕事です）。</li>
       <li><b>窓が開かないとき</b>：この場で窓を開けることを許してください。開かないときは、下の帯に「もう一度押す」と「本家の頁」が出ます。</li>
@@ -94,37 +116,80 @@ const CHANNELS=[
   {id:'wanyu',key:'5',n:'晚玉阿',k:'douyin',em:'📱',url:'https://live.douyin.com/401770194155'},
   {id:'pel',key:'6',n:'PEL 和平精英の試合',k:'huya',em:'🏆',url:'https://www.huya.com/660006'},
   {id:'qingning',key:'7',n:'清宁',k:'douyin',em:'📱',url:'https://live.douyin.com/618168030518'},
-  {id:'everyday',key:'8',n:'Japanese Everyday（おまかせ日本語）',k:'ytvod',em:'🗾',url:'https://www.youtube.com/@JapaneseEveryday/videos',playlist:'UUOiefzmQNln3gbed3oQQXKA'},
-  {id:'nhk',key:'9',n:'NHKワールド・ラジオ日本',k:'radio',em:'📻',url:'https://www3.nhk.or.jp/nhkworld/ja/live_radio/'},
-  {id:'jgi',key:'あ',n:'Japanese Girls Interview（おまかせ）',k:'ytvod',em:'🎙️',url:'https://www.youtube.com/@Japanesegirlsinterview/videos',playlist:'UU3xbgs2cWfWMOPijDjx2zfw'},
+  {id:'everyday',key:'8',n:'Japanese Everyday（おまかせ日本語）',k:'ytvod',mode:'vod',em:'🗾',url:'https://www.youtube.com/@JapaneseEveryday/videos',playlist:'UUOiefzmQNln3gbed3oQQXKA'},
+  {id:'nhk',key:'9',n:'NHKワールド・ラジオ日本',k:'radio',probe:'nhk',em:'📻',url:'https://www3.nhk.or.jp/nhkworld/ja/live_radio/'},
+  {id:'jgi',key:'あ',n:'Japanese Girls Interview（おまかせ）',k:'ytvod',mode:'vod',em:'🎙️',url:'https://www.youtube.com/@Japanesegirlsinterview/videos',playlist:'UU3xbgs2cWfWMOPijDjx2zfw'},
   {id:'amei',key:'い',n:'M（A妹）',k:'douyin',em:'📱',url:'https://live.douyin.com/856781106190'},
-  {id:'jiro',key:'う',n:'Jiro, just Japanese',k:'ytvod',em:'🎧',url:'https://www.youtube.com/@JiroJapanese/videos',playlist:'UU9zMlDf3SoAEgZta239F7nA'},
-  {id:'bite',key:'え',n:'Bite size Japanese',k:'ytvod',em:'🍙',url:'https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw/videos',playlist:'UUc8QJqwkWe9RcKYZTY2Ezuw'},
+  {id:'jiro',key:'う',n:'Jiro, just Japanese',k:'ytvod',mode:'vod',em:'🎧',url:'https://www.youtube.com/@JiroJapanese/videos',playlist:'UU9zMlDf3SoAEgZta239F7nA'},
+  {id:'bite',key:'え',n:'Bite size Japanese',k:'ytvod',mode:'vod',em:'🍙',url:'https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw/videos',playlist:'UUc8QJqwkWe9RcKYZTY2Ezuw'},
   {id:'tbs',key:'お',n:'TBS NEWS DIG（一日中のニュース）',k:'ytlive',em:'📰',url:'https://www.youtube.com/watch?v=Anr15FA9OCI',video:'Anr15FA9OCI'},
-  {id:'yumenotane',key:'0',n:'ゆめのたね放送局（色を選ぶ）',k:'radio',em:'🌈',url:'https://www.yumenotane.jp/'}
+  {id:'yumenotane',key:'0',n:'ゆめのたね放送局（色を選ぶ）',k:'radio',probe:'ynt',em:'🌈',url:'https://www.yumenotane.jp/'}
 ];
 const KIND={
-  huya:{t:'虎牙の生',c:'huya'},
-  douyin:{t:'抖音の生',c:'douyin'},
-  radio:{t:'音の流れ',c:'radio'},
-  ytvod:{t:'YouTube の聞きもの',c:'yt'},
-  ytlive:{t:'YouTube の生',c:'yt'}
+  huya:{t:'虎牙の生'},
+  douyin:{t:'抖音の生'},
+  radio:{t:'音の流れ'},
+  ytvod:{t:'YouTube の聞きもの'},
+  ytlive:{t:'YouTube の生'}
 };
 const $=s=>document.querySelector(s);
 const menu=$('#menu'),statusEl=$('#status');
 const wins={};
 let cur=null;
+let probeRun=0;
+
+const ST={
+  live:{label:'いま見られる',cls:'live'},
+  vod:{label:'いつでも',cls:'vod'},
+  off:{label:'いまは見られない',cls:'off'},
+  unknown:{label:'生・要確認',cls:'unknown'},
+  checking:{label:'確認中',cls:'checking'}
+};
+
+function setStatus(ch,state,run){
+  if(run!==undefined&&run!==probeRun) return;
+  if(!ch.stEl) return;
+  const s=ST[state]||ST.unknown;
+  ch.stEl.className='st '+s.cls;
+  ch.stEl.textContent=s.label;
+  ch.stEl.title=state==='unknown'
+    ? 'ブラウザの仕組みで、この場からは生の状態を読めません。窓を開いて確かめてください。'
+    : '';
+  if(ch.el) ch.el.dataset.status=state;
+}
 
 CHANNELS.forEach(ch=>{
+  const initial=ch.mode==='vod'?'vod':(ch.probe?'checking':'unknown');
   const b=document.createElement('button');
   b.className='item';
   b.dataset.id=ch.id;
   b.id='ch-'+ch.id;
-  b.innerHTML='<span class="em">'+ch.em+'</span>'+
-    '<span><span class="nm">'+ch.n+'</span><br><span class="meta">'+KIND[ch.k].t+'</span></span>'+
-    '<span class="k '+KIND[ch.k].c+'">'+ch.key+'</span>';
+  const em=document.createElement('span');
+  em.className='em';
+  em.textContent=ch.em;
+  const txt=document.createElement('span');
+  txt.className='txt';
+  const nm=document.createElement('span');
+  nm.className='nm';
+  nm.textContent=ch.n;
+  const meta=document.createElement('span');
+  meta.className='meta';
+  meta.appendChild(document.createTextNode(KIND[ch.k].t+' '));
+  const st=document.createElement('span');
+  ch.stEl=st;
+  meta.appendChild(st);
+  const key=document.createElement('span');
+  key.className='k';
+  key.textContent=ch.key;
+  txt.appendChild(nm);
+  txt.appendChild(meta);
+  b.appendChild(em);
+  b.appendChild(txt);
+  b.appendChild(key);
+  ch.el=b;
   b.addEventListener('click',()=>play(ch));
   menu.appendChild(b);
+  setStatus(ch,initial);
 });
 
 function markActive(id){
@@ -208,6 +273,73 @@ function openYtLive(ch){
   return openGenerated(ch,playerUrl({type:'ytlive',v:ch.video,name:ch.n}),false);
 }
 
+const NHK_PROBE_URLS=[
+  'https://masterpl.hls.nhkworld.jp/hls/r1/live/master.m3u8',
+  'https://nhkworld-radio.nhkworld.jp/hls/live/nhkworld-radio-media2/index.m3u8'
+];
+const YNT_BASE='https://d2kz66ab55q61t.cloudfront.net/';
+const YNT_KEYS=['red','orange','yellow','green','blue','purple'];
+
+async function probeNhk(ch,run){
+  setStatus(ch,'checking',run);
+  let saw=false;
+  for(const url of NHK_PROBE_URLS){
+    try{
+      const ctl=new AbortController();
+      const timer=setTimeout(()=>ctl.abort(),6000);
+      let r;
+      try{ r=await fetch(url,{cache:'no-store',signal:ctl.signal}); }
+      finally{ clearTimeout(timer); }
+      saw=true;
+      if(r.ok){
+        const text=await r.text();
+        if(text.indexOf('#EXTM3U')>=0){ setStatus(ch,'live',run); return; }
+      }
+    }catch(e){}
+  }
+  setStatus(ch,saw?'off':'unknown',run);
+}
+
+function probeYnt(ch,run){
+  setStatus(ch,'checking',run);
+  let settled=false, failed=0;
+  const audios=[];
+  const finish=state=>{
+    if(settled||run!==probeRun) return;
+    settled=true;
+    audios.forEach(a=>{ try{ a.src=''; a.load(); }catch(e){} });
+    setStatus(ch,state,run);
+  };
+  YNT_KEYS.forEach(key=>{
+    const a=new Audio();
+    a.preload='metadata';
+    audios.push(a);
+    const ok=()=>finish('live');
+    a.addEventListener('loadedmetadata',ok,{once:true});
+    a.addEventListener('canplay',ok,{once:true});
+    a.addEventListener('error',()=>{
+      failed++;
+      if(failed>=YNT_KEYS.length) finish('off');
+    },{once:true});
+    a.src=YNT_BASE+key;
+    try{ a.load(); }catch(e){
+      failed++;
+      if(failed>=YNT_KEYS.length) finish('off');
+    }
+  });
+  setTimeout(()=>{ if(!settled) finish('unknown'); },4500);
+}
+
+function probeAll(){
+  const run=++probeRun;
+  CHANNELS.forEach(ch=>{
+    if(ch.mode==='vod'){ setStatus(ch,'vod',run); return; }
+    if(ch.probe==='nhk') probeNhk(ch,run);
+    else if(ch.probe==='ynt') probeYnt(ch,run);
+    else setStatus(ch,'unknown',run);
+  });
+}
+
 function blocked(ch,opt){
   statusEl.classList.add('warn');
   statusEl.textContent='';
@@ -284,6 +416,9 @@ function fromHash(){
   const r=findChannel(h);
   if(r.ch) play(r.ch,r.color);
 }
+const recheck=$('#recheck');
+if(recheck) recheck.addEventListener('click',probeAll);
+setTimeout(probeAll,150);
 fromHash();
 addEventListener('hashchange',fromHash);
 
