@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>stream player</title>
+<title>stream の窓</title>
 <style>
 :root{--bar:#111528;--line:#232946;--ink:#e9ecf5;--sub:#9aa3c7;--acc:#7a4ff7}
 *{box-sizing:border-box}
@@ -45,11 +45,11 @@ background:var(--c);color:#fff;cursor:pointer;transition:transform .12s,box-shad
 <body>
 <header id="bar">
   <span class="dot"></span>
-  <div class="tt"><span id="barTitle">stream player</span><span id="barSub">読み込み中…</span></div>
-  <button id="shuffle" type="button" hidden>🔀 シャッフル</button>
-  <a id="ext" target="_blank" rel="noopener" hidden>公式 ↗</a>
+  <div class="tt"><span id="barTitle">stream の窓</span><span id="barSub">読み込んでいます…</span></div>
+  <button id="shuffle" type="button" hidden>🔀 選び直す</button>
+  <a id="ext" target="_blank" rel="noopener" hidden>本家 ↗</a>
 </header>
-<div id="stage"><div class="loading">読み込み中…</div></div>
+<div id="stage"><div class="loading">読み込んでいます…</div></div>
 <script>
 const $=s=>document.querySelector(s);
 const stage=$('#stage'), barTitle=$('#barTitle'), barSub=$('#barSub'),
@@ -58,17 +58,17 @@ const qs=new URLSearchParams(location.search);
 const type=qs.get('type')||'';
 const name=qs.get('name')||'';
 const YNT=[
-  {key:'red',label:'レッド',color:'#e03131'},
-  {key:'orange',label:'オレンジ',color:'#f08c00'},
-  {key:'yellow',label:'イエロー',color:'#f2c200',dark:true},
-  {key:'green',label:'グリーン',color:'#2f9e44'},
-  {key:'blue',label:'ブルー',color:'#1c7ed6'},
-  {key:'purple',label:'パープル',color:'#9c36b5'}
+  {key:'red',label:'赤',color:'#e03131'},
+  {key:'orange',label:'橙',color:'#f08c00'},
+  {key:'yellow',label:'黄',color:'#f2c200',dark:true},
+  {key:'green',label:'緑',color:'#2f9e44'},
+  {key:'blue',label:'青',color:'#1c7ed6'},
+  {key:'purple',label:'紫',color:'#9c36b5'}
 ];
 const YNT_BASE='https://d2kz66ab55q61t.cloudfront.net/';
 
 function setBar(title,sub,ext){
-  barTitle.textContent=title||'stream player';
+  barTitle.textContent=title||'stream の窓';
   barSub.textContent=sub||'';
   if(ext){ extLink.href=ext; extLink.hidden=false; }
 }
@@ -83,14 +83,14 @@ function validId(v){ return typeof v==='string'&&/^[A-Za-z0-9_-]{6,80}$/.test(v)
 
 function initYnt(color){
   const active=YNT.some(c=>c.key===color)?color:'red';
-  setBar('ゆめのたね放送局','24時間生放送 · 色を選んでください','https://www.yumenotane.jp/');
+  setBar('ゆめのたね放送局','一日中、生で流れています · 色を選んでください','https://www.yumenotane.jp/');
   stage.innerHTML='<div class="ynt-wrap">'+
-    '<div class="ynt-now"><span class="dot" id="yntDot"></span><span id="yntName"></span><small id="yntState">接続中…</small></div>'+
+    '<div class="ynt-now"><span class="dot" id="yntDot"></span><span id="yntName"></span><small id="yntState">つないでいます…</small></div>'+
     '<audio id="audio" controls autoplay preload="none"></audio>'+
     '<div class="colors" id="colors"></div>'+
-    '<p class="ynt-hint" id="yntHint">色を選ぶと即座に切り替わります。音が出ないときは再生ボタンを押してください。</p>'+
-    '<p class="ynt-hint">配信: <a href="https://d2kz66ab55q61t.cloudfront.net/" target="_blank" rel="noopener">CloudFront 公式ストリーム</a> · '+
-    '<a href="https://www.yumenotane.jp/" target="_blank" rel="noopener">公式サイト</a></p>'+
+    '<p class="ynt-hint" id="yntHint">色を選ぶと、その場で切り替わります。音が出ないときは ▶ の印を押してください。</p>'+
+    '<p class="ynt-hint">流れ: <a href="https://d2kz66ab55q61t.cloudfront.net/" target="_blank" rel="noopener">CloudFront の本家の流れ</a> · '+
+    '<a href="https://www.yumenotane.jp/" target="_blank" rel="noopener">本家の頁</a></p>'+
     '</div>';
   const audio=$('#audio'), colors=$('#colors'), dot=$('#yntDot'),
         yname=$('#yntName'), state=$('#yntState'), hint=$('#yntHint');
@@ -109,36 +109,36 @@ function initYnt(color){
   function setChannel(key){
     const info=YNT.find(c=>c.key===key)||YNT[0];
     audio.src=YNT_BASE+info.key;
-    audio.play().catch(()=>{ state.textContent='自動再生がブロックされました。▶ を押してください。'; });
+    audio.play().catch(()=>{ state.textContent='ひとりでに鳴らせませんでした。▶ の印を押してください。'; });
     dot.style.background=info.color;
     yname.textContent=info.label;
-    state.textContent='接続中…';
+    state.textContent='つないでいます…';
     state.classList.remove('ynt-err');
-    hint.textContent='色を選ぶと即座に切り替わります。音が出ないときは再生ボタンを押してください。';
+    hint.textContent='色を選ぶと、その場で切り替わります。音が出ないときは ▶ の印を押してください。';
     Object.keys(buttons).forEach(k=>buttons[k].classList.toggle('on',k===info.key));
     document.title='▶ '+info.label+' ・ ゆめのたね放送局';
     try{ history.replaceState(null,'','?type=ynt&color='+info.key); }catch(e){}
   }
-  audio.addEventListener('playing',()=>{ state.textContent='再生中'; state.classList.remove('ynt-err'); });
-  audio.addEventListener('waiting',()=>{ state.textContent='バッファリング…'; });
-  audio.addEventListener('stalled',()=>{ state.textContent='接続を待っています…'; });
+  audio.addEventListener('playing',()=>{ state.textContent='鳴っています'; state.classList.remove('ynt-err'); });
+  audio.addEventListener('waiting',()=>{ state.textContent='音をためています…'; });
+  audio.addEventListener('stalled',()=>{ state.textContent='つながるのを待っています…'; });
   audio.addEventListener('error',()=>{
-    state.textContent='接続できません';
+    state.textContent='つながりません';
     state.classList.add('ynt-err');
-    hint.textContent='配信に接続できませんでした。しばらくしてから色を選び直してください。';
+    hint.textContent='流れにつながりませんでした。少し待ってから、もう一度色を選んでください。';
   });
   window.setYntChannel=setChannel;
   setChannel(active);
 }
 
 function initNhk(){
-  setBar('NHKワールド・ラジオ日本','日本語 同時配信 · 公式 HLS','https://www3.nhk.or.jp/nhkworld/ja/live_radio/');
+  setBar('NHKワールド・ラジオ日本','日本語 · 本家の HLS の流れ','https://www3.nhk.or.jp/nhkworld/ja/live_radio/');
   stage.innerHTML='<div class="ynt-wrap">'+
-    '<div class="ynt-now"><span class="dot" id="dot"></span><span>NHKワールド・ラジオ日本</span><small id="state">接続中…</small></div>'+
+    '<div class="ynt-now"><span class="dot" id="dot"></span><span>NHKワールド・ラジオ日本</span><small id="state">つないでいます…</small></div>'+
     '<audio id="audio" controls autoplay preload="none"></audio>'+
-    '<p class="ynt-hint" id="hint">日本語の同時配信です。音が出ないときは再生ボタンを押してください。</p>'+
-    '<p class="ynt-hint">配信: 公式 HLS（r1 主源 → media2 备用）· '+
-    '<a href="https://www3.nhk.or.jp/nhkworld/ja/live_radio/" target="_blank" rel="noopener">NHK 公式ページ</a></p>'+
+    '<p class="ynt-hint" id="hint">日本語で、いま同じ時に流れています。音が出ないときは ▶ の印を押してください。</p>'+
+    '<p class="ynt-hint">流れ: 本家の HLS（r1 の流れ → media2 の控え）· '+
+    '<a href="https://www3.nhk.or.jp/nhkworld/ja/live_radio/" target="_blank" rel="noopener">NHK の本家の頁</a></p>'+
     '</div>';
   const audio=$('#audio'), dot=$('#dot'), state=$('#state'), hint=$('#hint');
   const official='https://www3.nhk.or.jp/nhkworld/ja/live_radio/';
@@ -153,12 +153,12 @@ function initNhk(){
     state.classList.toggle('ynt-err',!!err);
   }
   function failAll(){
-    setState('接続できません',true);
-    hint.innerHTML='配信に接続できませんでした。しばらくしてから再読み込みするか、'+
-      '<a href="'+official+'" target="_blank" rel="noopener">NHK 公式ページ</a>で再生してください。';
+    setState('つながりません',true);
+    hint.innerHTML='流れにつながりませんでした。少し待ってから読み直すか、'+
+      '<a href="'+official+'" target="_blank" rel="noopener">NHK の本家の頁</a>で聞いてください。';
   }
   function tryPlay(){
-    audio.play().catch(()=>{ setState('自動再生がブロックされました。▶ を押してください。'); });
+    audio.play().catch(()=>{ setState('ひとりでに鳴らせませんでした。▶ の印を押してください。'); });
   }
   function attach(){
     const url=URLS[idx];
@@ -167,10 +167,10 @@ function initNhk(){
       hls=new Hls({enableWorker:true});
       hls.on(Hls.Events.ERROR,(e,d)=>{
         if(!d||!d.fatal) return;
-        if(idx<URLS.length-1){ idx++; setState('备用流に切り替え中…'); attach(); }
+        if(idx<URLS.length-1){ idx++; setState('控えの流れに切り替えています…'); attach(); }
         else failAll();
       });
-      hls.on(Hls.Events.MANIFEST_PARSED,()=>{ setState('再生準備中…'); tryPlay(); });
+      hls.on(Hls.Events.MANIFEST_PARSED,()=>{ setState('鳴る支度をしています…'); tryPlay(); });
       hls.loadSource(url);
       hls.attachMedia(audio);
     }else if(audio.canPlayType('application/vnd.apple.mpegurl')){
@@ -180,9 +180,9 @@ function initNhk(){
       failAll();
     }
   }
-  audio.addEventListener('playing',()=>setState('再生中'));
-  audio.addEventListener('waiting',()=>setState('バッファリング…'));
-  audio.addEventListener('stalled',()=>setState('接続を待っています…'));
+  audio.addEventListener('playing',()=>setState('鳴っています'));
+  audio.addEventListener('waiting',()=>setState('音をためています…'));
+  audio.addEventListener('stalled',()=>setState('つながるのを待っています…'));
   audio.addEventListener('error',()=>{ if(!hls) failAll(); });
   if(window.Hls&&window.Hls.isSupported()) attach();
   else if(audio.canPlayType('application/vnd.apple.mpegurl')) attach();
@@ -204,16 +204,16 @@ function initNhk(){
 }
 
 function initYtPlaylist(list,title){
-  if(!validId(list)){ showError('YouTube の再生リスト ID が不正です。'); return; }
+  if(!validId(list)){ showError('YouTube の並びの ID が正しくありません。'); return; }
   const label=title||'YouTube';
-  setBar(label,'YouTube · 上传列表随机播放','https://www.youtube.com/playlist?list='+encodeURIComponent(list));
+  setBar(label,'YouTube · 上げたものの並びから選んで流す','https://www.youtube.com/playlist?list='+encodeURIComponent(list));
   stage.innerHTML='<div class="stage-fill"><div id="yt"></div></div>'+
-    '<div class="loading" id="ytLoading">YouTube プレーヤーを読み込み中…</div>';
+    '<div class="loading" id="ytLoading">YouTube の窓を読み込んでいます…</div>';
   let player=null, done=false;
   const finish=()=>{ done=true; const el=$('#ytLoading'); if(el) el.remove(); };
   window.onYouTubeIframeAPIReady=()=>{
     const loading=$('#ytLoading');
-    if(loading) loading.textContent='プレーヤーを準備中…';
+    if(loading) loading.textContent='窓の支度をしています…';
     player=new YT.Player('yt',{
       width:'100%',height:'100%',
       playerVars:{listType:'playlist',list:list,autoplay:1,rel:0,playsinline:1,origin:location.origin},
@@ -225,7 +225,7 @@ function initYtPlaylist(list,title){
           try{ e.target.setShuffle(true); }catch(x){}
           try{ e.target.playVideo(); }catch(x){}
         },
-        onError:e=>{ barSub.textContent='YouTube の再生エラー (code '+e.data+')'; }
+        onError:e=>{ barSub.textContent='YouTube で流せません（番号 '+e.data+'）'; }
       }
     });
   };
@@ -245,19 +245,19 @@ function initYtPlaylist(list,title){
 }
 
 function initYtLive(v,title){
-  if(!validId(v)){ showError('YouTube の動画 ID が不正です。'); return; }
-  const label=title||'YouTube LIVE';
-  setBar(label,'YouTube 直播','https://www.youtube.com/watch?v='+encodeURIComponent(v));
+  if(!validId(v)){ showError('YouTube の映りの ID が正しくありません。'); return; }
+  const label=title||'YouTube の生';
+  setBar(label,'YouTube の生','https://www.youtube.com/watch?v='+encodeURIComponent(v));
   stage.innerHTML='<div class="stage-fill"><iframe src="https://www.youtube.com/embed/'+
     encodeURIComponent(v)+'?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
-  document.title='▶ '+label+' ・ YouTube LIVE';
+  document.title='▶ '+label+' ・ YouTube の生';
 }
 
 if(type==='ynt') initYnt(qs.get('color')||'red');
 else if(type==='nhk') initNhk();
 else if(type==='ytplaylist') initYtPlaylist(qs.get('list'),name);
 else if(type==='ytlive') initYtLive(qs.get('v'),name);
-else showError('播放タイプが指定されていません。stream のメニューから開いてください。');
+else showError('どの窓かが決まっていません。stream の並びから開いてください。');
 </script>
 </body>
 </html>

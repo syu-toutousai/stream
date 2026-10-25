@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>stream ・ 直播 / 电台播放台（网页版）</title>
+<title>stream ・ 生の流れと音の部屋（ウェブ版）</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
 <style>
 :root{--bg:#f5f7fb;--card:#fff;--ink:#1c2333;--sub:#5b6478;--acc:#7a4ff7;--acc2:#eef1ff}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",sans-serif;
+body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Yu Gothic",sans-serif;
 background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 header{background:linear-gradient(135deg,#33418f,#7a4ff7 55%,#7a4ff7);color:#fff;padding:34px 20px 48px;text-align:center}
 header h1{font-size:24px;letter-spacing:2px}
@@ -52,37 +52,37 @@ footer a{color:var(--sub)}
 </head>
 <body>
 <header>
-  <h1>stream ・ 直播 / 电台播放台</h1>
-  <p>终端 <b>stream</b> 命令的网页异构版 —— 同一份菜单，点击即弹出独立播放窗口<br>
-  虎牙 / 抖音 / 电台 / YouTube：网页版与终端版一一对应，效果对应 mpv 窗口</p>
-  <a class="back" href="../">← 返回档案首页</a>
+  <h1>stream ・ 生の流れと音の部屋</h1>
+  <p>文字の画面で使う <b>stream</b> と同じ並びのウェブ版。選ぶと別の窓が開き、そのまま流れます。<br>
+  虎牙・抖音・音の流れ・YouTube を、mpv の窓と同じように。</p>
+  <a class="back" href="../">← 入口へ帰る</a>
 </header>
 
 <main>
   <section class="card">
-    <h2>选择主播 / 电台 / 日语节目（键盘 1–9 / あ–お / 0，点击即弹窗播放）</h2>
+    <h2>見たいもの・聞きたいものを選ぶ（キー 1–9 / あ–お / 0。押すか触れると、別の窓が開きます）</h2>
     <div class="menu" id="menu"></div>
-    <div class="hint">与终端版 menu 顺序一致 · 同名窗口自动复用 · 深链 #suk / #radio / #nhk / #ynt-red</div>
+    <div class="hint">文字の画面版と同じ並び · 同じ名の窓は使い回し · #suk / #radio / #nhk / #ynt-red で直に開けます</div>
   </section>
 
-  <div class="status" id="status">点击上方任意一项，将弹出独立播放窗口；深链 #radio 打开潮州 FM91.4。</div>
+  <div class="status" id="status">上のどれかを選ぶと、別の窓が開きます。#radio なら潮州 FM91.4 が開きます。</div>
 
   <section class="card notes">
-    <h2>说明</h2>
+    <h2>知っておいてほしいこと</h2>
     <ul>
-      <li><b>弹窗即播</b>：虎牙 / 抖音 / 电台 / YouTube 一律在独立窗口中播放；关闭本页不影响播放窗口，再次选择同一项会复用已有窗口。</li>
-      <li><b>电台</b>：<b>FM91.4</b> 使用 radio5.cn 官方播放器（北京时间 <b>01:00–06:00 停播</b>）；<b>NHKワールド・ラジオ日本</b> 使用本站 HLS 播放窗口（官方 r1 主源 → media2 备用流）；<b>ゆめのたね放送局</b> 使用本站六色播放窗口，直连 CloudFront 官方流，点颜色即换台。</li>
-      <li><b>YouTube</b>：选项 8 / あ / う / え 用内嵌播放器从频道上传列表中随机开始，可点「🔀 シャッフル」重新打乱；选项 お 为 TBS NEWS DIG 24 小时直播。网页版不缓存视频列表，也不保存播放进度（这些是终端版 yt-dlp 的功能）。</li>
-      <li><b>弹窗被拦截</b>：请允许本站弹窗（点菜单时会即时弹出）；若被拦截，下方状态栏会给出「再点一次播放」按钮和直达链接。</li>
-      <li><b>断流恢复</b>：官方播放器自带重连；ゆめのたね 断流后点一下播放键即可重新连接；终端版 streamlink + mpv 的重连逻辑不适用于网页版。</li>
+      <li><b>窓を開けば、そのまま流れる</b>：虎牙・抖音・音の流れ・YouTube は、どれも別の窓で流れます。この頁を閉じても流れは止まりません。同じものを選び直すと、開いている窓をそのまま使います。</li>
+      <li><b>音の流れ</b>：<b>FM91.4</b> は radio5.cn の本家の窓（中国の時計で <b>01:00–06:00</b> は休み）。<b>NHKワールド・ラジオ日本</b> はこの場の HLS の窓（本家 r1 の流れ → media2 の控え）。<b>ゆめのたね放送局</b> はこの場の六つの色の窓で、色を押すとその場で切り替わります。</li>
+      <li><b>YouTube</b>：8 / あ / う / え は、その人が上げたものの並びから、はじめに一つを気まぐれに選んで流します（「🔀 選び直す」で別のものを選べます）。お は TBS NEWS DIG の一日中の生。ウェブ版は並びを貯めず、どこまで見たかも覚えません（それは文字の画面版の yt-dlp の仕事です）。</li>
+      <li><b>窓が開かないとき</b>：この場で窓を開けることを許してください。開かないときは、下の帯に「もう一度押す」と「本家の頁」が出ます。</li>
+      <li><b>流れが切れたとき</b>：本家の窓はひとりでにつなぎ直します。ゆめのたね は切れたら ▶ の印を押せばつながります。文字の画面版の streamlink + mpv のつなぎ直しは、ウェブ版にはありません。</li>
     </ul>
   </section>
 </main>
 
 <footer>
-  源仓库：<a href="https://github.com/syu-toutousai/stream" rel="noopener">stream</a> ·
+  元の置き場：<a href="https://github.com/syu-toutousai/stream" rel="noopener">stream</a> ·
   <a href="https://github.com/syu-toutousai/syu-toutousai.github.io" rel="noopener">syu-toutousai.github.io</a><br>
-  终端版 streamlink + mpv ｜ 网页版 GitHub Pages 静态托管
+  文字の画面版 streamlink + mpv ｜ ウェブ版は GitHub Pages の置き場
 </footer>
 
 <script>
@@ -90,25 +90,25 @@ const CHANNELS=[
   {id:'buqiuren',key:'1',n:'不求人',k:'douyin',em:'📱',url:'https://live.douyin.com/933572413882'},
   {id:'suk',key:'2',n:'Suk',k:'huya',em:'🎮',url:'https://www.huya.com/791120'},
   {id:'yuguo',key:'3',n:'雨果',k:'huya',em:'🎮',url:'https://www.huya.com/52009'},
-  {id:'radio',key:'4',n:'潮州交通音乐广播 FM91.4',k:'radio',em:'📻',url:'https://radio5.cn/embed/1719',page:'https://radio5.cn/play/radio/czbtv-traffic-music-radio'},
+  {id:'radio',key:'4',n:'潮州交通音楽ラジオ FM91.4',k:'radio',em:'📻',url:'https://radio5.cn/embed/1719',page:'https://radio5.cn/play/radio/czbtv-traffic-music-radio'},
   {id:'wanyu',key:'5',n:'晚玉阿',k:'douyin',em:'📱',url:'https://live.douyin.com/401770194155'},
-  {id:'pel',key:'6',n:'PEL和平精英赛事',k:'huya',em:'🏆',url:'https://www.huya.com/660006'},
+  {id:'pel',key:'6',n:'PEL 和平精英の試合',k:'huya',em:'🏆',url:'https://www.huya.com/660006'},
   {id:'qingning',key:'7',n:'清宁',k:'douyin',em:'📱',url:'https://live.douyin.com/618168030518'},
-  {id:'everyday',key:'8',n:'Japanese Everyday(おまかせ日本語)',k:'ytvod',em:'🗾',url:'https://www.youtube.com/@JapaneseEveryday/videos',playlist:'UUOiefzmQNln3gbed3oQQXKA'},
+  {id:'everyday',key:'8',n:'Japanese Everyday（おまかせ日本語）',k:'ytvod',em:'🗾',url:'https://www.youtube.com/@JapaneseEveryday/videos',playlist:'UUOiefzmQNln3gbed3oQQXKA'},
   {id:'nhk',key:'9',n:'NHKワールド・ラジオ日本',k:'radio',em:'📻',url:'https://www3.nhk.or.jp/nhkworld/ja/live_radio/'},
-  {id:'jgi',key:'あ',n:'Japanese Girls Interview(おまかせ)',k:'ytvod',em:'🎙️',url:'https://www.youtube.com/@Japanesegirlsinterview/videos',playlist:'UU3xbgs2cWfWMOPijDjx2zfw'},
+  {id:'jgi',key:'あ',n:'Japanese Girls Interview（おまかせ）',k:'ytvod',em:'🎙️',url:'https://www.youtube.com/@Japanesegirlsinterview/videos',playlist:'UU3xbgs2cWfWMOPijDjx2zfw'},
   {id:'amei',key:'い',n:'M（A妹）',k:'douyin',em:'📱',url:'https://live.douyin.com/856781106190'},
   {id:'jiro',key:'う',n:'Jiro, just Japanese',k:'ytvod',em:'🎧',url:'https://www.youtube.com/@JiroJapanese/videos',playlist:'UU9zMlDf3SoAEgZta239F7nA'},
   {id:'bite',key:'え',n:'Bite size Japanese',k:'ytvod',em:'🍙',url:'https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw/videos',playlist:'UUc8QJqwkWe9RcKYZTY2Ezuw'},
-  {id:'tbs',key:'お',n:'TBS NEWS DIG(24hニュース)',k:'ytlive',em:'📰',url:'https://www.youtube.com/watch?v=Anr15FA9OCI',video:'Anr15FA9OCI'},
-  {id:'yumenotane',key:'0',n:'ゆめのたね放送局(色を選ぶ)',k:'radio',em:'🌈',url:'https://www.yumenotane.jp/'}
+  {id:'tbs',key:'お',n:'TBS NEWS DIG（一日中のニュース）',k:'ytlive',em:'📰',url:'https://www.youtube.com/watch?v=Anr15FA9OCI',video:'Anr15FA9OCI'},
+  {id:'yumenotane',key:'0',n:'ゆめのたね放送局（色を選ぶ）',k:'radio',em:'🌈',url:'https://www.yumenotane.jp/'}
 ];
 const KIND={
-  huya:{t:'虎牙直播',c:'huya'},
-  douyin:{t:'抖音直播',c:'douyin'},
-  radio:{t:'电台直播',c:'radio'},
-  ytvod:{t:'YouTube 日语节目',c:'yt'},
-  ytlive:{t:'YouTube 直播',c:'yt'}
+  huya:{t:'虎牙の生',c:'huya'},
+  douyin:{t:'抖音の生',c:'douyin'},
+  radio:{t:'音の流れ',c:'radio'},
+  ytvod:{t:'YouTube の聞きもの',c:'yt'},
+  ytlive:{t:'YouTube の生',c:'yt'}
 };
 const $=s=>document.querySelector(s);
 const menu=$('#menu'),statusEl=$('#status');
@@ -211,24 +211,24 @@ function openYtLive(ch){
 function blocked(ch,opt){
   statusEl.classList.add('warn');
   statusEl.textContent='';
-  statusEl.appendChild(document.createTextNode('⚠️ 浏览器拦截了弹窗：请允许本站弹窗，或 '));
+  statusEl.appendChild(document.createTextNode('窓が開きませんでした。この場で窓を開けることを許してから、'));
   const retry=document.createElement('button');
   retry.type='button';
   retry.className='retry';
-  retry.textContent='再点一次播放「'+ch.n+'」';
+  retry.textContent='もう一度「'+ch.n+'」を押す';
   retry.addEventListener('click',()=>play(ch,opt));
   statusEl.appendChild(retry);
   const direct=directUrl(ch);
   if(direct){
-    statusEl.appendChild(document.createTextNode('，或 '));
+    statusEl.appendChild(document.createTextNode('。または '));
     const a=document.createElement('a');
     a.href=direct;
     a.target='_blank';
     a.rel='noopener';
-    a.textContent='直接打开';
+    a.textContent='本家の頁';
     statusEl.appendChild(a);
   }
-  statusEl.appendChild(document.createTextNode('。'));
+  statusEl.appendChild(document.createTextNode(' を開いてください。'));
 }
 
 function play(ch,opt){
@@ -238,25 +238,25 @@ function play(ch,opt){
   markActive(ch.id);
   const el=document.getElementById('ch-'+ch.id);
   if(el){ try{ el.scrollIntoView({block:'center'}); }catch(e){} }
-  document.title='▶ '+ch.n+' ・ stream 播放台';
+  document.title='▶ '+ch.n+' ・ stream の窓';
   let w=null,msg='';
   if(ch.id==='yumenotane'){
     w=openYumenotane(ch,opt);
-    msg='🪟 已弹出「ゆめのたね放送局」六色播放窗口 —— 在窗口里点颜色即可换台；若没有自动出声，点一下播放键。';
+    msg='「ゆめのたね放送局」の六つの色の窓を開きました。窓の中で色を押すと切り替わります。音が出ないときは ▶ の印を押してください。';
   }else if(ch.id==='nhk'){
     w=openNhk(ch);
-    msg='🪟 已弹出「NHKワールド・ラジオ日本」HLS 播放窗口 —— r1 主源失败时自动切到 media2 备用流。';
+    msg='「NHKワールド・ラジオ日本」の HLS の窓を開きました。r1 の流れがだめなら、media2 の控えにつなぎます。';
   }else if(ch.k==='ytvod'){
     w=openYtPlaylist(ch);
-    msg='🪟 已弹出「'+ch.n+'」YouTube 随机播放窗口 —— 从该频道上传列表中随机开始，可用「🔀 シャッフル」重新打乱。';
+    msg='「'+ch.n+'」の YouTube の窓を開きました。その人が上げたものの並びから、はじめに一つを気まぐれに選んで流します。「🔀 選び直す」で別のものを選べます。';
   }else if(ch.k==='ytlive'){
     w=openYtLive(ch);
-    msg='🪟 已弹出「'+ch.n+'」YouTube 直播窗口。';
+    msg='「'+ch.n+'」の YouTube の生の窓を開きました。';
   }else{
     w=openPlayerWindow(ch);
     msg=(ch.k==='radio')
-      ? '🪟 已弹出「'+ch.n+'」官方播放窗口 —— 进窗口后若未自动播放，点一下它自带的播放键；再点本项会刷新取新流。'
-      : '🪟 已弹出「'+ch.n+'」播放窗口（再次选择会复用同一窗口）。';
+      ? '「'+ch.n+'」の本家の窓を開きました。ひとりでに鳴らないときは、窓の中の ▶ の印を押してください。もう一度選ぶと新しく取り直します。'
+      : '「'+ch.n+'」の窓を開きました（もう一度選ぶと、開いている窓を使い回します）。';
   }
   if(w){
     statusEl.classList.remove('warn');
