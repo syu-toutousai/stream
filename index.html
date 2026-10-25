@@ -6,7 +6,7 @@
 <title>stream ・ 生の流れと音の部屋（ウェブ版）</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
 <style>
-:root{--bg:#f5f7fb;--card:#fff;--ink:#1c2333;--sub:#5b6478;--acc:#7a4ff7;--acc2:#eef1ff}
+:root{--bg:#f5f7fb;--card:#fff;--ink:#1c2333;--sub:#5b6478;--acc:#7a4ff7;--acc2:#eef1ff;--live:#087f5b;--vod:#0b5f75;--off:#4b5563;--unknown:#b45309;--checking:#1d4ed8}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Yu Gothic",sans-serif;
 background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
@@ -30,29 +30,38 @@ font-family:inherit;color:var(--ink);transition:.15s}
 .item .nm{display:block;font-size:14.5px;font-weight:700;line-height:1.4}
 .item .meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:11.5px;color:var(--sub)}
 .item .k{margin-left:8px;font-size:11px;font-weight:700;border-radius:99px;padding:3px 9px;background:#e7eaf6;color:var(--sub)}
-.item[data-status="live"] .k{background:#087f5b;color:#fff}
-.item[data-status="vod"] .k{background:#0b7285;color:#fff}
-.item[data-status="off"] .k{background:#697386;color:#fff}
-.item[data-status="unknown"] .k{background:#a16207;color:#fff}
-.item[data-status="checking"] .k{background:#1971c2;color:#fff}
-.st{font-size:9.5px;font-weight:700;border-radius:99px;padding:1px 6px;white-space:nowrap}
-.st.live{background:#e6f7ef;color:#087f5b}
-.st.vod{background:#e0f7fa;color:#0b7285}
-.st.off{background:#eceff3;color:#697386}
-.st.unknown{background:#fff8e1;color:#a16207}
-.st.checking{background:#e7f5ff;color:#1971c2}
+.item[data-status="live"]{box-shadow:inset 4px 0 0 var(--live)}
+.item[data-status="vod"]{box-shadow:inset 4px 0 0 var(--vod)}
+.item[data-status="off"]{box-shadow:inset 4px 0 0 var(--off)}
+.item[data-status="unknown"]{box-shadow:inset 4px 0 0 var(--unknown)}
+.item[data-status="checking"]{box-shadow:inset 4px 0 0 var(--checking)}
+.item[data-status="live"] .k{background:var(--live);color:#fff}
+.item[data-status="vod"] .k{background:var(--vod);color:#fff}
+.item[data-status="off"] .k{background:var(--off);color:#fff}
+.item[data-status="unknown"] .k{background:var(--unknown);color:#fff}
+.item[data-status="checking"] .k{background:var(--checking);color:#fff}
+.st{font-size:9.5px;font-weight:700;border-radius:99px;padding:1px 6px;white-space:nowrap;color:#fff}
+.st.live{background:var(--live)}
+.st.vod{background:var(--vod)}
+.st.off{background:var(--off)}
+.st.unknown{background:var(--unknown)}
+.st.checking{background:var(--checking)}
+.c-live{color:var(--live)}
+.c-vod{color:var(--vod)}
+.c-off{color:var(--off)}
+.c-unknown{color:var(--unknown)}
 .hint{font-size:11.5px;color:var(--sub);text-align:center;margin-top:12px;line-height:1.8}
-.legend{display:flex;align-items:center;flex-wrap:wrap;gap:7px 13px;margin-top:12px;padding-top:12px;
-border-top:1px solid #eef0f6;font-size:10.5px;color:var(--sub)}
-.legend .lg{display:inline-flex;align-items:center;gap:5px}
-.legend .dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-.legend .dot.live{background:#087f5b}
-.legend .dot.vod{background:#0b7285}
-.legend .dot.off{background:#697386}
-.legend .dot.unknown{background:#a16207}
-.legend button{font:inherit;font-size:10.5px;font-weight:700;color:var(--sub);background:#fff;
-border:1px solid #d7dceb;border-radius:99px;padding:3px 10px;cursor:pointer}
-.legend button:hover{background:#f3f5fb}
+.legend{display:flex;align-items:center;flex-wrap:wrap;gap:7px 8px;margin-top:12px;padding-top:12px;
+border-top:1px solid #eef0f6;font-size:10.5px}
+.legend .lg{display:inline-flex;align-items:center;border-radius:99px;padding:3px 10px;
+font-weight:700;color:#fff;white-space:nowrap}
+.legend .lg.live{background:var(--live)}
+.legend .lg.vod{background:var(--vod)}
+.legend .lg.off{background:var(--off)}
+.legend .lg.unknown{background:var(--unknown)}
+.legend button{font:inherit;font-size:10.5px;font-weight:700;color:#fff;background:var(--ink);
+border:0;border-radius:99px;padding:4px 11px;cursor:pointer}
+.legend button:hover{background:#334155}
 .status{font-size:12.5px;color:var(--sub);line-height:1.9;margin:0 2px 16px;background:var(--card);
 border-radius:12px;padding:11px 15px;box-shadow:0 6px 24px rgba(30,40,90,.12)}
 .status.warn{color:#a35200;background:#fff8ee}
@@ -83,10 +92,10 @@ footer a{color:var(--sub)}
     <div class="menu" id="menu"></div>
     <div class="hint">文字の画面版と同じ並び · 同じ名の窓は使い回し · #suk / #radio / #nhk / #ynt-red で直に開けます</div>
     <div class="legend">
-      <span class="lg"><i class="dot live"></i>いま見られる生</span>
-      <span class="lg"><i class="dot vod"></i>いつでも見られるもの（VOD）</span>
-      <span class="lg"><i class="dot off"></i>いまは見られない生</span>
-      <span class="lg"><i class="dot unknown"></i>この場では確かめられない生</span>
+      <span class="lg live">いま見られる生</span>
+      <span class="lg vod">いつでも見られるもの（VOD）</span>
+      <span class="lg off">いまは見られない生</span>
+      <span class="lg unknown">この場では確かめられない生</span>
       <button type="button" id="recheck">確かめ直す</button>
     </div>
   </section>
@@ -97,7 +106,7 @@ footer a{color:var(--sub)}
     <h2>知っておいてほしいこと</h2>
     <ul>
       <li><b>窓を開けば、そのまま流れる</b>：虎牙・抖音・音の流れ・YouTube は、どれも別の窓で流れます。この頁を閉じても流れは止まりません。同じものを選び直すと、開いている窓をそのまま使います。</li>
-      <li><b>色の意味</b>：<b>青</b>はいつでも見られるもの（VOD、8 / あ / う / え）で、確かめません。<b>緑</b>はいま見られる生、<b>灰</b>はいまは見られない生、<b>黄</b>は生だが、この場からは確かめられないものです。ブラウザの仕組みで他の場所の中身は読めないため、自動で確かめられるのは NHK と ゆめのたね だけです。ほかの生は窓を開いて確かめてください。「確かめ直す」でまた確かめられます。</li>
+      <li><b>色の意味</b>：<b class="c-vod">青</b>はいつでも見られるもの（VOD、8 / あ / う / え）で、確かめません。<b class="c-live">緑</b>はいま見られる生、<b class="c-off">灰</b>はいまは見られない生、<b class="c-unknown">黄</b>は生だが、この場からは確かめられないものです。ブラウザの仕組みで他の場所の中身は読めないため、自動で確かめられるのは NHK と ゆめのたね だけです。ほかの生は窓を開いて確かめてください。「確かめ直す」でまた確かめられます。</li>
       <li><b>音の流れ</b>：<b>FM91.4</b> は radio5.cn の本家の窓（中国の時計で <b>01:00–06:00</b> は休み）。<b>NHKワールド・ラジオ日本</b> はこの場の HLS の窓（本家 r1 の流れ → media2 の控え）。<b>ゆめのたね放送局</b> はこの場の六つの色の窓で、色を押すとその場で切り替わります。</li>
       <li><b>YouTube</b>：8 / あ / う / え は、その人が上げたものの並びから、はじめに一つを気まぐれに選んで流します（「🔀 選び直す」で別のものを選べます）。お は TBS NEWS DIG の一日中の生。ウェブ版は並びを貯めず、どこまで見たかも覚えません（それは文字の画面版の yt-dlp の仕事です）。</li>
       <li><b>窓が開かないとき</b>：この場で窓を開けることを許してください。開かないときは、下の帯に「もう一度押す」と「本家の頁」が出ます。</li>
