@@ -39,7 +39,20 @@ background:var(--c);color:#fff;cursor:pointer;transition:transform .12s,box-shad
 .ynt-hint{font-size:11.5px;color:var(--sub);line-height:1.9;margin-top:15px}
 .ynt-hint a{color:#a99bff}
 .ynt-err{color:#ff8787}
-@media(max-width:520px){.colors{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stage-fill video{width:100%;height:100%;object-fit:contain;background:#000;display:block}
+.jizo-wrap{max-width:900px;margin:0 auto;padding:24px 18px 40px}
+.jizo-head h1{font-size:20px;line-height:1.4;margin:0 0 6px}
+.jizo-head p{font-size:12px;color:var(--sub);line-height:1.8;margin:0}
+.jizo-head .orig{font-size:11px;color:#7f8bb3;margin-top:5px}
+.jizo-note{font-size:11.5px;color:var(--sub);line-height:1.9;margin-top:12px}
+.chapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;margin-top:18px}
+.chapter{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;
+background:#151a2e;border:1px solid #232946;border-radius:11px;color:var(--ink);
+text-decoration:none;font-size:13px;font-weight:700;transition:background .12s,border-color .12s}
+.chapter:hover{background:#1d2440;border-color:#3b4a7a}
+.chapter .go{color:var(--sub);font-size:11px;font-weight:400}
+@media(max-width:520px){.colors{grid-template-columns:repeat(2,minmax(0,1fr))}
+.chapters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -66,6 +79,11 @@ const YNT=[
   {key:'purple',label:'紫',color:'#9c36b5'}
 ];
 const YNT_BASE='https://d2kz66ab55q61t.cloudfront.net/';
+const JIZO_BASE='https://hkcdn.sanshi.uk/media/himp4/14/14-012_CZ/14-012-';
+const JIZO_COUNT=51;
+function jizoSrc(n){ return JIZO_BASE+String(n).padStart(4,'0')+'_cz.mp4'; }
+function jizoName(n){ return '第'+n+'巻'; }
+const JIZO_SRCS=Array.from({length:JIZO_COUNT},(_,i)=>jizoSrc(i+1));
 
 function setBar(title,sub,ext){
   barTitle.textContent=title||'stream の窓';
@@ -253,8 +271,57 @@ function initYtLive(v,title){
   document.title='▶ '+label+' ・ YouTube の生';
 }
 
+function initJizo(){
+  setBar('地蔵菩薩本願経','浄空法師の講義 · 1998年5月 · 全51巻',null);
+  stage.innerHTML='<div class="jizo-wrap">'+
+    '<div class="jizo-head">'+
+      '<h1>地蔵菩薩本願経</h1>'+
+      '<p>浄空法師の講義 · 1998年5月 · シンガポール浄宗学会 · 全51巻</p>'+
+      '<p class="orig">原題：地藏菩薩本願經</p>'+
+      '<p class="jizo-note">第1巻から第51巻まで、番号の順に並んでいます。各巻はおよそ2時間です。押すと、その巻の動画が開きます。</p>'+
+    '</div>'+
+    '<div class="chapters" id="chapters"></div>'+
+    '</div>';
+  const list=$('#chapters');
+  for(let i=1;i<=JIZO_COUNT;i++){
+    const a=document.createElement('a');
+    a.className='chapter';
+    a.href='player.html?type=mp4&src='+encodeURIComponent(jizoSrc(i));
+    const n=document.createElement('span');
+    n.textContent=jizoName(i);
+    const go=document.createElement('span');
+    go.className='go';
+    go.textContent='▶';
+    a.appendChild(n);
+    a.appendChild(go);
+    list.appendChild(a);
+  }
+  document.title='地蔵菩薩本願経 ・ 章一覧';
+}
+
+function initMp4(src){
+  if(!JIZO_SRCS.includes(src)){ showError('動画の場所が正しくありません。'); return; }
+  const m=src.match(/14-012-(\d{4})_cz\.mp4$/);
+  const vol=parseInt(m[1],10);
+  const label=jizoName(vol);
+  setBar('地蔵菩薩本願経 '+label,'浄空法師の講義 · 1998年',src);
+  extLink.textContent='ファイル ↗';
+  shuffleBtn.hidden=false;
+  shuffleBtn.textContent='一覧へ戻る';
+  shuffleBtn.onclick=()=>{ location.href='player.html?type=jizo'; };
+  stage.innerHTML='<div class="stage-fill"><video id="v" controls autoplay playsinline preload="metadata" referrerpolicy="no-referrer" src="'+src+'"></video></div>';
+  const v=$('#v');
+  const hintTimer=setTimeout(()=>{ if(v.paused) barSub.textContent='▶ を押すと始まります'; },1500);
+  v.addEventListener('playing',()=>{ clearTimeout(hintTimer); barSub.textContent='浄空法師の講義 · 1998年'; });
+  v.addEventListener('waiting',()=>{ barSub.textContent='読み込んでいます…'; });
+  v.addEventListener('error',()=>{ barSub.textContent='この巻を読み込めませんでした。'; });
+  document.title='▶ '+label+' ・ 地蔵菩薩本願経';
+}
+
 if(type==='ynt') initYnt(qs.get('color')||'red');
 else if(type==='nhk') initNhk();
+else if(type==='jizo') initJizo();
+else if(type==='mp4') initMp4(qs.get('src')||'');
 else if(type==='ytplaylist') initYtPlaylist(qs.get('list'),name);
 else if(type==='ytlive') initYtLive(qs.get('v'),name);
 else showError('どの窓かが決まっていません。stream の並びから開いてください。');

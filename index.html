@@ -62,6 +62,17 @@ font-weight:700;color:#fff;white-space:nowrap}
 .legend button{font:inherit;font-size:10.5px;font-weight:700;color:#fff;background:var(--ink);
 border:0;border-radius:99px;padding:4px 11px;cursor:pointer}
 .legend button:hover{background:#334155}
+.series{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:#f7f8fc;
+border:2px solid transparent;border-left:4px solid var(--vod);border-radius:16px;padding:15px 16px;
+cursor:pointer;font-family:inherit;color:var(--ink);transition:.15s}
+.series:hover{border-color:#cfd6f7;border-left-color:var(--vod)}
+.series.active{border-color:var(--acc);background:var(--acc2);border-left-color:var(--vod)}
+.series:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.series .em{font-size:24px;line-height:1}
+.series .txt{flex:1;min-width:0}
+.series .nm{display:block;font-size:15px;font-weight:700;line-height:1.4}
+.series .meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;color:var(--sub);margin-top:2px}
+.series .go{font-size:11.5px;font-weight:700;color:var(--vod);white-space:nowrap}
 .status{font-size:12.5px;color:var(--sub);line-height:1.9;margin:0 2px 16px;background:var(--card);
 border-radius:12px;padding:11px 15px;box-shadow:0 6px 24px rgba(30,40,90,.12)}
 .status.warn{color:#a35200;background:#fff8ee}
@@ -90,7 +101,7 @@ footer a{color:var(--sub)}
   <section class="card">
     <h2>見たいもの・聞きたいものを選ぶ（キー 1–9 / あ–お / 0。押すか触れると、別の窓が開きます）</h2>
     <div class="menu" id="menu"></div>
-    <div class="hint">文字の画面版と同じ並び · 同じ名の窓は使い回し · #suk / #radio / #nhk / #ynt-red で直に開けます</div>
+    <div class="hint">文字の画面版と同じ並び · 同じ名の窓は使い回し · #suk / #radio / #nhk / #ynt-red / #jizo で直に開けます</div>
     <div class="legend">
       <span class="lg live">いま見られる生</span>
       <span class="lg vod">いつでも見られるもの（VOD）</span>
@@ -98,6 +109,19 @@ footer a{color:var(--sub)}
       <span class="lg unknown">この場では確かめられない生</span>
       <button type="button" id="recheck">確かめ直す</button>
     </div>
+  </section>
+
+  <section class="card">
+    <h2>ウェブ版の聞きもの</h2>
+    <button class="series" id="ch-jizo" data-id="jizo" type="button">
+      <span class="em">📖</span>
+      <span class="txt">
+        <span class="nm">地蔵菩薩本願経</span>
+        <span class="meta">浄空法師の講義・1998年・全51巻 <span class="st vod">いつでも</span></span>
+      </span>
+      <span class="go">章一覧へ →</span>
+    </button>
+    <div class="hint">浄空法師の1998年の講義、全51巻。章一覧から巻を選ぶと、その巻の動画が開きます。</div>
   </section>
 
   <div class="status" id="status">上のどれかを選ぶと、別の窓が開きます。#radio なら潮州 FM91.4 が開きます。</div>
@@ -109,6 +133,7 @@ footer a{color:var(--sub)}
       <li><b>色の意味</b>：<b class="c-vod">青</b>はいつでも見られるもの（VOD、8 / あ / う / え）で、確かめません。<b class="c-live">緑</b>はいま見られる生、<b class="c-off">灰</b>はいまは見られない生、<b class="c-unknown">黄</b>は生だが、この場からは確かめられないものです。ブラウザの仕組みで他の場所の中身は読めないため、自動で確かめられるのは NHK と ゆめのたね だけです。ほかの生は窓を開いて確かめてください。「確かめ直す」でまた確かめられます。</li>
       <li><b>音の流れ</b>：<b>FM91.4</b> は radio5.cn の本家の窓（中国の時計で <b>01:00–06:00</b> は休み）。<b>NHKワールド・ラジオ日本</b> はこの場の HLS の窓（本家 r1 の流れ → media2 の控え）。<b>ゆめのたね放送局</b> はこの場の六つの色の窓で、色を押すとその場で切り替わります。</li>
       <li><b>YouTube</b>：8 / あ / う / え は、その人が上げたものの並びから、はじめに一つを気まぐれに選んで流します（「🔀 選び直す」で別のものを選べます）。お は TBS NEWS DIG の一日中の生。ウェブ版は並びを貯めず、どこまで見たかも覚えません（それは文字の画面版の yt-dlp の仕事です）。</li>
+      <li><b>地蔵菩薩本願経</b>：1998年の浄空法師の講義、全51巻。ウェブ版だけの聞きもので、章一覧から巻を選ぶと、その巻の動画が開きます。いつでも見られるもの（VOD）です。</li>
       <li><b>窓が開かないとき</b>：この場で窓を開けることを許してください。開かないときは、下の帯に「もう一度押す」と「本家の頁」が出ます。</li>
       <li><b>流れが切れたとき</b>：本家の窓はひとりでにつなぎ直します。ゆめのたね は切れたら ▶ の印を押せばつながります。文字の画面版の streamlink + mpv のつなぎ直しは、ウェブ版にはありません。</li>
     </ul>
@@ -146,6 +171,8 @@ const KIND={
   ytvod:{t:'YouTube の聞きもの'},
   ytlive:{t:'YouTube の生'}
 };
+const JIZO_PAGE='player.html?type=jizo';
+const JIZO={id:'jizo',n:'地蔵菩薩本願経',k:'jizo',url:JIZO_PAGE};
 const $=s=>document.querySelector(s);
 const menu=$('#menu'),statusEl=$('#status');
 const wins={};
@@ -207,7 +234,7 @@ CHANNELS.forEach(ch=>{
 });
 
 function markActive(id){
-  document.querySelectorAll('.item').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
+  document.querySelectorAll('.item,.series').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
 }
 
 function windowFeatures(){
@@ -371,7 +398,7 @@ function blocked(ch,opt){
     a.href=direct;
     a.target='_blank';
     a.rel='noopener';
-    a.textContent='本家の頁';
+    a.textContent=ch.id==='jizo'?'章一覧の頁':'本家の頁';
     statusEl.appendChild(a);
   }
   statusEl.appendChild(document.createTextNode(' を開いてください。'));
@@ -386,7 +413,10 @@ function play(ch,opt){
   if(el){ try{ el.scrollIntoView({block:'center'}); }catch(e){} }
   document.title='▶ '+ch.n+' ・ stream の窓';
   let w=null,msg='';
-  if(ch.id==='yumenotane'){
+  if(ch.id==='jizo'){
+    w=openGenerated(ch,ch.url,false);
+    msg='「地蔵菩薩本願経」の章一覧を開きました。巻を選ぶと、その巻の動画が開きます。';
+  }else if(ch.id==='yumenotane'){
     w=openYumenotane(ch,opt);
     msg='「ゆめのたね放送局」の六つの色の窓を開きました。窓の中で色を押すと切り替わります。音が出ないときは ▶ の印を押してください。';
   }else if(ch.id==='nhk'){
@@ -427,11 +457,14 @@ function findChannel(h){
 function fromHash(){
   const h=decodeURIComponent((location.hash||'').replace(/^#/,'')).trim().toLowerCase();
   if(!h) return;
+  if(h==='jizo'||h==='jizou'){ play(JIZO); return; }
   const r=findChannel(h);
   if(r.ch) play(r.ch,r.color);
 }
 const recheck=$('#recheck');
 if(recheck) recheck.addEventListener('click',probeAll);
+const jizoCard=$('#ch-jizo');
+if(jizoCard) jizoCard.addEventListener('click',()=>play(JIZO));
 setTimeout(probeAll,150);
 fromHash();
 addEventListener('hashchange',fromHash);

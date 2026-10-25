@@ -10,6 +10,7 @@
 - 虎牙 / 抖音 / FM91.4 弹窗播放官方网页播放器；FM91.4 窗口内需点一次它自带的播放键，提示「播放源已失效」时再点一次本项即可重新取流；
 - NHKワールド・ラジオ日本 / ゆめのたね放送局 / YouTube 选项使用站内 `player.html`：NHK 直连官方 HLS（r1 主源 → media2 备用），ゆめのたね 六色 CloudFront 直连并可点颜色换台，YouTube 从频道上传列表随机播放（选项 お 为 TBS NEWS DIG 24h 直播）；
 - 同名窗口自动复用；弹窗被拦截时状态栏会给出「再点一次播放」按钮与直达链接；从主页 <https://syu-toutousai.github.io/> 也可进入。
+- 网页版另有「地藏菩薩本願經（浄空法師・1998年・全51巻）」卡片：点开为按卷顺序的章节列表（不做颜色区分），每卷用站内 MP4 播放器播放（`player.html?type=jizo` / `type=mp4`）；视频由 `hkcdn.sanshi.uk` 按需流式加载，单卷约 700MB，不会整卷预下载。
 - 电台 FM91.4 停播时段为北京时间 01:00–06:00，此时官方源无流（网页版/终端版都一样）。
 
 ## 菜单内容
@@ -36,7 +37,7 @@
 
 - `stream`：选择菜单入口。每次显示菜单前并行探测各直播源在线状态，并按颜色区分：Live 绿、VOD 青、不可播放灰、未知黄（VOD 不探测，固定以青色标注 `[VOD]`）；播放结束返回菜单，输入 `q` 才退出。
 - `index.html`：GitHub Pages 网页版播放台（终端菜单的异构实现，见上）。
-- `player.html`：网页版站内播放器：NHK HLS、ゆめのたね六色、YouTube 上传列表随机播放、TBS NEWS DIG 直播；由 `index.html` 以查询参数打开。
+- `player.html`：网页版站内播放器：NHK HLS、ゆめのたね六色、YouTube 上传列表随机播放、TBS NEWS DIG 直播、地蔵菩薩本願経の章一覧と MP4 再生；由 `index.html` 以查询参数打开。
 - `huya.sh`：虎牙 / 抖音直播稳定播放（断线自动重连；`mpv` 按 `q` 退出或 `Ctrl+C` 结束不重连）。
 - `cz_radio.sh`：潮州交通音乐广播 FM91.4，流地址含时效 token，脚本会自动重新取流续播；前台（菜单）模式下 `mpv` 按 `q` 退出则返回菜单，后台 `cz-radio.service` 断线仍自动续播。
 - `nhk_radio.sh`：NHKワールド・ラジオ日本（日本語同时配信），官方 HLS 固定地址、无 token；r1 主源取不到时自动回落到备用流，断线自动重连；`mpv` 按 `q` 退出返回菜单。
@@ -71,6 +72,7 @@
 - YouTube（选项 8 / あ / う / え）：可访问 `youtube.com`（本机经 Clash TUN 代理，行情不稳时会加载失败，`mpv` 会自动跳到下一个）
 - YouTube 直播（选项 お）：可访问 `youtube.com`（以 `streamlink` 拉流并断线重连，同虎牙 / 抖音）
 - 网页版 NHK 电台：浏览器可访问 `cdn.jsdelivr.net`（加载 hls.js）及 `nhkworld.jp` 的 HLS 源
+- 网页版 地蔵菩薩本願経：可访问 `hkcdn.sanshi.uk`（MP4 按需流式播放，单卷约 700MB）
 
 以 Arch Linux 为例安装：
 
