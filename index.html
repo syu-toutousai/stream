@@ -50,6 +50,7 @@ font-family:inherit;color:var(--ink);transition:.15s}
 .c-vod{color:var(--vod)}
 .c-off{color:var(--off)}
 .c-unknown{color:var(--unknown)}
+.tag{display:inline-block;font-size:9.5px;font-weight:700;border-radius:99px;padding:1px 6px;background:#eef1ff;color:#33418f;white-space:nowrap;vertical-align:middle;margin-left:4px}
 .hint{font-size:11.5px;color:var(--sub);text-align:center;margin-top:12px;line-height:1.8}
 .legend{display:flex;align-items:center;flex-wrap:wrap;gap:7px 8px;margin-top:12px;padding-top:12px;
 border-top:1px solid #eef0f6;font-size:10.5px}
@@ -116,12 +117,12 @@ footer a{color:var(--sub)}
     <button class="series" id="ch-jizo" data-id="jizo" type="button">
       <span class="em">📖</span>
       <span class="txt">
-        <span class="nm">地蔵菩薩本願経</span>
+        <span class="nm">地蔵菩薩本願経 <span class="tag">潮州語吹替</span></span>
         <span class="meta">浄空法師の講義・1998年・全51巻 <span class="st vod">いつでも</span></span>
       </span>
       <span class="go">章一覧へ →</span>
     </button>
-    <div class="hint">浄空法師の1998年の講義、全51巻。章一覧から巻を選ぶと、その巻の動画が開きます。</div>
+    <div class="hint">浄空法師の1998年の講義、全51巻。潮州語（Teochew）の吹き替え版です。章一覧から巻を選ぶと、その巻の動画が開きます。</div>
   </section>
 
   <div class="status" id="status">上のどれかを選ぶと、別の窓が開きます。#radio なら潮州 FM91.4 が開きます。</div>
@@ -133,7 +134,7 @@ footer a{color:var(--sub)}
       <li><b>色の意味</b>：<b class="c-vod">青</b>はいつでも見られるもの（VOD、8 / あ / う / え）で、確かめません。<b class="c-live">緑</b>はいま見られる生、<b class="c-off">灰</b>はいまは見られない生、<b class="c-unknown">黄</b>は生だが、この場からは確かめられないものです。ブラウザの仕組みで他の場所の中身は読めないため、自動で確かめられるのは NHK と ゆめのたね だけです。ほかの生は窓を開いて確かめてください。「確かめ直す」でまた確かめられます。</li>
       <li><b>音の流れ</b>：<b>FM91.4</b> は radio5.cn の本家の窓（中国の時計で <b>01:00–06:00</b> は休み）。<b>NHKワールド・ラジオ日本</b> はこの場の HLS の窓（本家 r1 の流れ → media2 の控え）。<b>ゆめのたね放送局</b> はこの場の六つの色の窓で、色を押すとその場で切り替わります。</li>
       <li><b>YouTube</b>：8 / あ / う / え は、その人が上げたものの並びから、はじめに一つを気まぐれに選んで流します（「🔀 選び直す」で別のものを選べます）。お は TBS NEWS DIG の一日中の生。ウェブ版は並びを貯めず、どこまで見たかも覚えません（それは文字の画面版の yt-dlp の仕事です）。</li>
-      <li><b>地蔵菩薩本願経</b>：1998年の浄空法師の講義、全51巻。ウェブ版だけの聞きもので、章一覧から巻を選ぶと、その巻の動画が開きます。いつでも見られるもの（VOD）です。</li>
+      <li><b>地蔵菩薩本願経</b>：1998年の浄空法師の講義、全51巻。音声は潮州語（Teochew）の吹き替え版で、字幕は中国語（繁体字）です。ウェブ版だけの聞きもので、章一覧から巻を選ぶと、その巻の動画が開きます。いつでも見られるもの（VOD）です。</li>
       <li><b>窓が開かないとき</b>：この場で窓を開けることを許してください。開かないときは、下の帯に「もう一度押す」と「本家の頁」が出ます。</li>
       <li><b>流れが切れたとき</b>：本家の窓はひとりでにつなぎ直します。ゆめのたね は切れたら ▶ の印を押せばつながります。文字の画面版の streamlink + mpv のつなぎ直しは、ウェブ版にはありません。</li>
     </ul>

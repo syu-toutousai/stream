@@ -51,6 +51,7 @@ background:#151a2e;border:1px solid #232946;border-radius:11px;color:var(--ink);
 text-decoration:none;font-size:13px;font-weight:700;transition:background .12s,border-color .12s}
 .chapter:hover{background:#1d2440;border-color:#3b4a7a}
 .chapter .go{color:var(--sub);font-size:11px;font-weight:400}
+.tag{display:inline-block;font-size:9.5px;font-weight:700;border-radius:99px;padding:1px 6px;background:#eef1ff;color:#33418f;white-space:nowrap;vertical-align:middle;margin-left:6px}
 @media(max-width:520px){.colors{grid-template-columns:repeat(2,minmax(0,1fr))}
 .chapters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
@@ -272,13 +273,13 @@ function initYtLive(v,title){
 }
 
 function initJizo(){
-  setBar('地蔵菩薩本願経','浄空法師の講義 · 1998年5月 · 全51巻',null);
+  setBar('地蔵菩薩本願経','潮州語（Teochew）吹替 · 浄空法師の講義 · 1998年5月 · 全51巻',null);
   stage.innerHTML='<div class="jizo-wrap">'+
     '<div class="jizo-head">'+
-      '<h1>地蔵菩薩本願経</h1>'+
-      '<p>浄空法師の講義 · 1998年5月 · シンガポール浄宗学会 · 全51巻</p>'+
-      '<p class="orig">原題：地藏菩薩本願經</p>'+
-      '<p class="jizo-note">第1巻から第51巻まで、番号の順に並んでいます。各巻はおよそ2時間です。押すと、その巻の動画が開きます。</p>'+
+      '<h1>地蔵菩薩本願経 <span class="tag">潮州語吹替</span></h1>'+
+      '<p>潮州語（Teochew）吹替版 · 浄空法師の講義 · 1998年5月 · シンガポール浄宗学会 · 全51巻</p>'+
+      '<p class="orig">原題：地藏菩薩本願經（潮州語吹替版）</p>'+
+      '<p class="jizo-note">第1巻から第51巻まで、番号の順に並んでいます。各巻はおよそ2時間です。音声は潮州語（Teochew）、字幕は中国語（繁体字）です。ファイル名の末尾にある _cz は潮州語版を表します。押すと、その巻の動画が開きます。</p>'+
     '</div>'+
     '<div class="chapters" id="chapters"></div>'+
     '</div>';
@@ -304,7 +305,7 @@ function initMp4(src){
   const m=src.match(/14-012-(\d{4})_cz\.mp4$/);
   const vol=parseInt(m[1],10);
   const label=jizoName(vol);
-  setBar('地蔵菩薩本願経 '+label,'浄空法師の講義 · 1998年',src);
+  setBar('地蔵菩薩本願経 '+label,'潮州語（Teochew）吹替 · 浄空法師の講義 · 1998年',src);
   extLink.textContent='ファイル ↗';
   shuffleBtn.hidden=false;
   shuffleBtn.textContent='一覧へ戻る';
@@ -312,7 +313,7 @@ function initMp4(src){
   stage.innerHTML='<div class="stage-fill"><video id="v" controls autoplay playsinline preload="metadata" referrerpolicy="no-referrer" src="'+src+'"></video></div>';
   const v=$('#v');
   const hintTimer=setTimeout(()=>{ if(v.paused) barSub.textContent='▶ を押すと始まります'; },1500);
-  v.addEventListener('playing',()=>{ clearTimeout(hintTimer); barSub.textContent='浄空法師の講義 · 1998年'; });
+  v.addEventListener('playing',()=>{ clearTimeout(hintTimer); barSub.textContent='潮州語（Teochew）吹替 · 浄空法師の講義 · 1998年'; });
   v.addEventListener('waiting',()=>{ barSub.textContent='読み込んでいます…'; });
   v.addEventListener('error',()=>{ barSub.textContent='この巻を読み込めませんでした。'; });
   document.title='▶ '+label+' ・ 地蔵菩薩本願経';
