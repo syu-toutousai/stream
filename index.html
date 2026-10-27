@@ -100,9 +100,9 @@ footer a{color:var(--sub)}
 
 <main>
   <section class="card">
-    <h2>見たいもの・聞きたいものを選ぶ（キー 1–9 / あ–お / 0。押すか触れると、別の窓が開きます）</h2>
+    <h2>見たいもの・聞きたいものを選ぶ（キー 1–9 / あ–か / 0。押すか触れると、別の窓が開きます）</h2>
     <div class="menu" id="menu"></div>
-    <div class="hint">文字の画面版と同じ並び · 同じ名の窓は使い回し · #suk / #radio / #nhk / #ynt-red / #jizo で直に開けます</div>
+    <div class="hint">文字の画面版と同じ並び · 同じ名の窓は使い回し · #suk / #radio / #nhk / #ynt-red / #jizo / #akiko で直に開けます</div>
     <div class="legend">
       <span class="lg live">いま見られる生</span>
       <span class="lg vod">いつでも見られるもの（VOD）</span>
@@ -131,9 +131,9 @@ footer a{color:var(--sub)}
     <h2>知っておいてほしいこと</h2>
     <ul>
       <li><b>窓を開けば、そのまま流れる</b>：虎牙・抖音・音の流れ・YouTube は、どれも別の窓で流れます。この頁を閉じても流れは止まりません。同じものを選び直すと、開いている窓をそのまま使います。</li>
-      <li><b>色の意味</b>：<b class="c-vod">青</b>はいつでも見られるもの（VOD、8 / あ / う / え）で、確かめません。<b class="c-live">緑</b>はいま見られる生、<b class="c-off">灰</b>はいまは見られない生、<b class="c-unknown">黄</b>は生だが、この場からは確かめられないものです。ブラウザの仕組みで他の場所の中身は読めないため、自動で確かめられるのは NHK と ゆめのたね だけです。ほかの生は窓を開いて確かめてください。「確かめ直す」でまた確かめられます。</li>
+      <li><b>色の意味</b>：<b class="c-vod">青</b>はいつでも見られるもの（VOD、い–か）で、確かめません。<b class="c-live">緑</b>はいま見られる生、<b class="c-off">灰</b>はいまは見られない生、<b class="c-unknown">黄</b>は生だが、この場からは確かめられないものです。ブラウザの仕組みで他の場所の中身は読めないため、自動で確かめられるのは NHK と ゆめのたね だけです。ほかの生は窓を開いて確かめてください。「確かめ直す」でまた確かめられます。</li>
       <li><b>音の流れ</b>：<b>FM91.4</b> は radio5.cn の本家の窓（中国の時計で <b>01:00–06:00</b> は休み）。<b>NHKワールド・ラジオ日本</b> はこの場の HLS の窓（本家 r1 の流れ → media2 の控え）。<b>ゆめのたね放送局</b> はこの場の六つの色の窓で、色を押すとその場で切り替わります。</li>
-      <li><b>YouTube</b>：8 / あ / う / え は、その人が上げたものの並びから、はじめに一つを気まぐれに選んで流します（「🔀 選び直す」で別のものを選べます）。お は TBS NEWS DIG の一日中の生。ウェブ版は並びを貯めず、どこまで見たかも覚えません（それは文字の画面版の yt-dlp の仕事です）。</li>
+      <li><b>YouTube</b>：い–か は、その人が上げたものの並びから、はじめに一つを気まぐれに選んで流します（「🔀 選び直す」で別のものを選べます）。あ は TBS NEWS DIG の一日中の生。ウェブ版は並びを貯めず、どこまで見たかも覚えません（それは文字の画面版の yt-dlp の仕事です）。</li>
       <li><b>地蔵菩薩本願経</b>：1998年の浄空法師の講義、全51巻。音声は潮州語（Teochew）の吹き替え版で、字幕は中国語（繁体字）です。ウェブ版だけの聞きもので、章一覧から巻を選ぶと、その巻の動画が開きます。いつでも見られるもの（VOD）です。</li>
       <li><b>窓が開かないとき</b>：この場で窓を開けることを許してください。開かないときは、下の帯に「もう一度押す」と「本家の頁」が出ます。</li>
       <li><b>流れが切れたとき</b>：本家の窓はひとりでにつなぎ直します。ゆめのたね は切れたら ▶ の印を押せばつながります。文字の画面版の streamlink + mpv のつなぎ直しは、ウェブ版にはありません。</li>
@@ -152,18 +152,19 @@ const CHANNELS=[
   {id:'buqiuren',key:'1',n:'不求人',k:'douyin',em:'📱',url:'https://live.douyin.com/933572413882'},
   {id:'suk',key:'2',n:'Suk',k:'huya',em:'🎮',url:'https://www.huya.com/791120'},
   {id:'yuguo',key:'3',n:'雨果',k:'huya',em:'🎮',url:'https://www.huya.com/52009'},
-  {id:'radio',key:'4',n:'潮州交通音楽ラジオ FM91.4',k:'radio',em:'📻',url:'https://radio5.cn/embed/1719',page:'https://radio5.cn/play/radio/czbtv-traffic-music-radio'},
-  {id:'wanyu',key:'5',n:'晚玉阿',k:'douyin',em:'📱',url:'https://live.douyin.com/401770194155'},
-  {id:'pel',key:'6',n:'PEL 和平精英の試合',k:'huya',em:'🏆',url:'https://www.huya.com/660006'},
-  {id:'qingning',key:'7',n:'清宁',k:'douyin',em:'📱',url:'https://live.douyin.com/618168030518'},
-  {id:'everyday',key:'8',n:'Japanese Everyday（おまかせ日本語）',k:'ytvod',mode:'vod',em:'🗾',url:'https://www.youtube.com/@JapaneseEveryday/videos',playlist:'UUOiefzmQNln3gbed3oQQXKA'},
+  {id:'wanyu',key:'4',n:'晚玉阿',k:'douyin',em:'📱',url:'https://live.douyin.com/401770194155'},
+  {id:'qingning',key:'5',n:'清宁',k:'douyin',em:'📱',url:'https://live.douyin.com/618168030518'},
+  {id:'amei',key:'6',n:'M（A妹）',k:'douyin',em:'📱',url:'https://live.douyin.com/856781106190'},
+  {id:'pel',key:'7',n:'PEL 和平精英の試合',k:'huya',em:'🏆',url:'https://www.huya.com/660006'},
+  {id:'radio',key:'8',n:'潮州交通音楽ラジオ FM91.4',k:'radio',em:'📻',url:'https://radio5.cn/embed/1719',page:'https://radio5.cn/play/radio/czbtv-traffic-music-radio'},
   {id:'nhk',key:'9',n:'NHKワールド・ラジオ日本',k:'radio',probe:'nhk',em:'📻',url:'https://www3.nhk.or.jp/nhkworld/ja/live_radio/'},
-  {id:'jgi',key:'あ',n:'Japanese Girls Interview（おまかせ）',k:'ytvod',mode:'vod',em:'🎙️',url:'https://www.youtube.com/@Japanesegirlsinterview/videos',playlist:'UU3xbgs2cWfWMOPijDjx2zfw'},
-  {id:'amei',key:'い',n:'M（A妹）',k:'douyin',em:'📱',url:'https://live.douyin.com/856781106190'},
-  {id:'jiro',key:'う',n:'Jiro, just Japanese',k:'ytvod',mode:'vod',em:'🎧',url:'https://www.youtube.com/@JiroJapanese/videos',playlist:'UU9zMlDf3SoAEgZta239F7nA'},
-  {id:'bite',key:'え',n:'Bite size Japanese',k:'ytvod',mode:'vod',em:'🍙',url:'https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw/videos',playlist:'UUc8QJqwkWe9RcKYZTY2Ezuw'},
-  {id:'tbs',key:'お',n:'TBS NEWS DIG（一日中のニュース）',k:'ytlive',em:'📰',url:'https://www.youtube.com/watch?v=Anr15FA9OCI',video:'Anr15FA9OCI'},
-  {id:'yumenotane',key:'0',n:'ゆめのたね放送局（色を選ぶ）',k:'radio',probe:'ynt',em:'🌈',url:'https://www.yumenotane.jp/'}
+  {id:'yumenotane',key:'0',n:'ゆめのたね放送局（色を選ぶ）',k:'radio',probe:'ynt',em:'🌈',url:'https://www.yumenotane.jp/'},
+  {id:'tbs',key:'あ',n:'TBS NEWS DIG（一日中のニュース）',k:'ytlive',em:'📰',url:'https://www.youtube.com/watch?v=Anr15FA9OCI',video:'Anr15FA9OCI'},
+  {id:'everyday',key:'い',n:'Japanese Everyday（おまかせ日本語）',k:'ytvod',mode:'vod',em:'🗾',url:'https://www.youtube.com/@JapaneseEveryday/videos',playlist:'UUOiefzmQNln3gbed3oQQXKA'},
+  {id:'jgi',key:'う',n:'Japanese Girls Interview（おまかせ）',k:'ytvod',mode:'vod',em:'🎙️',url:'https://www.youtube.com/@Japanesegirlsinterview/videos',playlist:'UU3xbgs2cWfWMOPijDjx2zfw'},
+  {id:'jiro',key:'え',n:'Jiro, just Japanese',k:'ytvod',mode:'vod',em:'🎧',url:'https://www.youtube.com/@JiroJapanese/videos',playlist:'UU9zMlDf3SoAEgZta239F7nA'},
+  {id:'bite',key:'お',n:'Bite size Japanese',k:'ytvod',mode:'vod',em:'🍙',url:'https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw/videos',playlist:'UUc8QJqwkWe9RcKYZTY2Ezuw'},
+  {id:'akiko',key:'か',n:'Akiko_Japanese_Conversations（おまかせ）',k:'ytvod',mode:'vod',em:'🌸',url:'https://www.youtube.com/@Aki-SenseiJPN/videos',playlist:'UU_lynzl0m1QQD3ggIDgYCEw'}
 ];
 const KIND={
   huya:{t:'虎牙の生'},
@@ -443,7 +444,7 @@ function play(ch,opt){
   }
 }
 
-const KANA_ROMAN={a:'あ',i:'い',u:'う',e:'え',o:'お'};
+const KANA_ROMAN={a:'あ',i:'い',u:'う',e:'え',o:'お',k:'か'};
 
 function findChannel(h){
   let ch=CHANNELS.find(c=>c.id===h);

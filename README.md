@@ -6,32 +6,35 @@
 
 同一份菜单的 GitHub Pages 网页版：<https://syu-toutousai.github.io/stream/>（源码为本仓库 `index.html` + `player.html`）
 
-- 点击菜单（或按 `1–9` / `あ–お` / `0`、深链 `#suk` / `#radio` / `#nhk` / `#ynt-red` 等）会弹出一个**独立播放窗口**，与终端版「选台即开 mpv 窗口」对应；
+- 点击菜单（或按 `1–9` / `あ–か` / `0`、深链 `#suk` / `#radio` / `#nhk` / `#ynt-red` / `#akiko` 等）会弹出一个**独立播放窗口**，与终端版「选台即开 mpv 窗口」对应；
 - 虎牙 / 抖音 / FM91.4 弹窗播放官方网页播放器；FM91.4 窗口内需点一次它自带的播放键，提示「播放源已失效」时再点一次本项即可重新取流；
-- NHKワールド・ラジオ日本 / ゆめのたね放送局 / YouTube 选项使用站内 `player.html`：NHK 直连官方 HLS（r1 主源 → media2 备用），ゆめのたね 六色 CloudFront 直连并可点颜色换台，YouTube 从频道上传列表随机播放（选项 お 为 TBS NEWS DIG 24h 直播）；
+- NHKワールド・ラジオ日本 / ゆめのたね放送局 / YouTube 选项使用站内 `player.html`：NHK 直连官方 HLS（r1 主源 → media2 备用），ゆめのたね 六色 CloudFront 直连并可点颜色换台，YouTube 从频道上传列表随机播放（选项 あ 为 TBS NEWS DIG 24h 直播）；
 - 同名窗口自动复用；弹窗被拦截时状态栏会给出「再点一次播放」按钮与直达链接；从主页 <https://syu-toutousai.github.io/> 也可进入。
 - 网页版另有「地藏菩薩本願經（潮州话／Teochew 吹替版・浄空法師・1998年・全51巻）」卡片：点开为按卷顺序的章节列表（不做颜色区分），每卷用站内 MP4 播放器播放（`player.html?type=jizo` / `type=mp4`）；文件名末尾 `_cz` 即潮州话版。视频由 `hkcdn.sanshi.uk` 按需流式加载，单卷约 700MB，不会整卷预下载。
 - 电台 FM91.4 停播时段为北京时间 01:00–06:00，此时官方源无流（网页版/终端版都一样）。
 
 ## 菜单内容
 
+菜单按「直播（游戏 → 电台 → 新闻）→ VOD（日语学习）」排列。
+
 | 选项 | 名称 | 类型 | 实现 |
 | --- | --- | --- | --- |
 | 1 | 不求人 | 抖音直播 | `streamlink` → `mpv` |
 | 2 | Suk | 虎牙直播 | `streamlink` → `mpv` |
 | 3 | 雨果 | 虎牙直播 | `streamlink` → `mpv` |
-| 4 | 潮州交通音乐广播 FM91.4 | 电台 | 从 radio5.cn 取流 → `mpv` |
-| 5 | 晚玉阿 | 抖音直播 | `streamlink` → `mpv` |
-| 6 | PEL和平精英赛事 | 虎牙直播 | `streamlink` → `mpv` |
-| 7 | 清宁 | 抖音直播 | `streamlink` → `mpv` |
-| 8 | Japanese Everyday | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
+| 4 | 晚玉阿 | 抖音直播 | `streamlink` → `mpv` |
+| 5 | 清宁 | 抖音直播 | `streamlink` → `mpv` |
+| 6 | M（A妹） | 抖音直播 | `streamlink` → `mpv` |
+| 7 | PEL和平精英赛事 | 虎牙直播 | `streamlink` → `mpv` |
+| 8 | 潮州交通音乐广播 FM91.4 | 电台 | 从 radio5.cn 取流 → `mpv` |
 | 9 | NHKワールド・ラジオ日本 | 电台（日本） | nhkworld.jp 官方 HLS 流 → `mpv` |
-| あ | Japanese Girls Interview | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
-| い | M（A妹） | 抖音直播 | `streamlink` → `mpv` |
-| う | Jiro, just Japanese | YouTube 日语播客 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
-| え | Bite size Japanese | YouTube 日语播客 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
-| お | TBS NEWS DIG(24hニュース) | YouTube 直播 | `streamlink` → `mpv` |
 | 0 | ゆめのたね放送局 | 电台（日本・トーク） | 六色频道二级菜单（`1`–`6` 彩色选台）→ CloudFront 官方流 → `mpv` |
+| あ | TBS NEWS DIG(24hニュース) | YouTube 直播 | `streamlink` → `mpv` |
+| い | Japanese Everyday | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
+| う | Japanese Girls Interview | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
+| え | Jiro, just Japanese | YouTube 日语播客 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
+| お | Bite size Japanese | YouTube 日语播客 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
+| か | Akiko_Japanese_Conversations | YouTube 日语节目 | `yt-dlp` 枚举频道视频 → `mpv` 随机播放 |
 
 ## 文件说明
 
@@ -42,7 +45,7 @@
 - `cz_radio.sh`：潮州交通音乐广播 FM91.4，流地址含时效 token，脚本会自动重新取流续播；前台（菜单）模式下 `mpv` 按 `q` 退出则返回菜单，后台 `cz-radio.service` 断线仍自动续播。
 - `nhk_radio.sh`：NHKワールド・ラジオ日本（日本語同时配信），官方 HLS 固定地址、无 token；r1 主源取不到时自动回落到备用流，断线自动重连；`mpv` 按 `q` 退出返回菜单。
 - `ynt_radio.sh`：ゆめのたね放送局（日本的互联网社区电台，以谈话节目为主），六色频道（`red`/`orange`/`yellow`/`green`/`blue`/`purple`）直连 CloudFront 官方流，固定地址、无 token；断线自动重连，`mpv` 按 `q` 退出返回菜单。
-- `yt_random.sh`：随机播放 YouTube 频道视频（选项 8 为 [@JapaneseEveryday](https://www.youtube.com/@JapaneseEveryday)，选项 あ 为 [@Japanesegirlsinterview](https://www.youtube.com/@Japanesegirlsinterview)，选项 う 为 [@JiroJapanese](https://www.youtube.com/@JiroJapanese)，选项 え 为 [Bite Size Japanese](https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw)）。
+- `yt_random.sh`：随机播放 YouTube 频道视频（选项 い 为 [@JapaneseEveryday](https://www.youtube.com/@JapaneseEveryday)，选项 う 为 [@Japanesegirlsinterview](https://www.youtube.com/@Japanesegirlsinterview)，选项 え 为 [@JiroJapanese](https://www.youtube.com/@JiroJapanese)，选项 お 为 [Bite Size Japanese](https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw)，选项 か 为 [@Aki-SenseiJPN](https://www.youtube.com/@Aki-SenseiJPN)）。
   视频列表缓存在 `~/.cache/stream-yt/`（24 小时），每次启动 `mpv --shuffle` 随机排序；加载失败的视频自动跳过。
   播放进度按视频记录在 `~/.cache/stream-yt/watch_later/`：`q` 退出后下次先续播上次中断的视频，其余仍随机，
   随机遇到看过的视频从上次进度继续（不想要先续播可加 `--playlist-start=no`）。
@@ -54,7 +57,7 @@
 - `bash`
 - `mpv`：播放器
 - `streamlink`：虎牙 / 抖音拉流
-- `yt-dlp`：YouTube 频道视频枚举与播放（选项 8 / あ / う / え）
+- `yt-dlp`：YouTube 频道视频枚举与播放（选项 い / う / え / お / か）
 - `curl` + `python3`：`cz_radio.sh` 获取并解析流地址
 - `grep`：脚本内部提取页面 nonce（一般系统自带）
 
@@ -69,8 +72,8 @@
 - 电台：可访问 `radio5.cn`、`ytcastmp3.radio.cn`
 - 电台（NHK）：可访问 `nhkworld.jp`（Clash 线路不稳时脚本会自动重连/落备流）
 - 电台（ゆめのたね）：可访问 `d2kz66ab55q61t.cloudfront.net`（六色频道均为全球可达的官方流）
-- YouTube（选项 8 / あ / う / え）：可访问 `youtube.com`（本机经 Clash TUN 代理，行情不稳时会加载失败，`mpv` 会自动跳到下一个）
-- YouTube 直播（选项 お）：可访问 `youtube.com`（以 `streamlink` 拉流并断线重连，同虎牙 / 抖音）
+- YouTube（选项 い / う / え / お / か）：可访问 `youtube.com`（本机经 Clash TUN 代理，行情不稳时会加载失败，`mpv` 会自动跳到下一个）
+- YouTube 直播（选项 あ）：可访问 `youtube.com`（以 `streamlink` 拉流并断线重连，同虎牙 / 抖音）
 - 网页版 NHK 电台：浏览器可访问 `cdn.jsdelivr.net`（加载 hls.js）及 `nhkworld.jp` 的 HLS 源
 - 网页版 地蔵菩薩本願経（潮州語吹替）：可访问 `hkcdn.sanshi.uk`（MP4 按需流式播放，单卷约 700MB）
 
@@ -97,12 +100,14 @@ export PATH="$HOME/bin:$PATH"
 
 ```bash
 stream
-# 1) 不求人 [在线]  2) Suk [在线]  3) 雨果 [在线]  4) 潮州交通音乐广播FM91.4 [在线]
-# 5) 晚玉阿 [未开播]  6) PEL和平精英赛事 [在线]  7) 清宁 [未开播]  8) Japanese Everyday(随机日语) [VOD]  9) NHKワールド・ラジオ日本 [在线]
-# あ) Japanese Girls Interview(随机日语) [VOD]  う) Jiro, just Japanese(随机日语) [VOD]  え) Bite size Japanese(随机日语) [VOD]  お) TBS NEWS DIG(24hニュース) [在线]  0) ゆめのたね放送局(色を選ぶ) [在线]
+# 1) 不求人 [在线]  2) Suk [在线]  3) 雨果 [在线]  4) 晚玉阿 [未开播]
+# 5) 清宁 [未开播]  6) M（A妹） [在线]  7) PEL和平精英赛事 [在线]  8) 潮州交通音乐广播FM91.4 [在线]  9) NHKワールド・ラジオ日本 [在线]
+# 0) ゆめのたね放送局(色を選ぶ) [在线]  あ) TBS NEWS DIG(24hニュース) [在线]
+# い) Japanese Everyday(随机日语) [VOD]  う) Japanese Girls Interview(随机日语) [VOD]  え) Jiro, just Japanese(随机日语) [VOD]
+# お) Bite size Japanese(随机日语) [VOD]  か) Akiko_Japanese_Conversations(随机日语) [VOD]
 ```
 
-- 启动（及每次播放结束返回菜单）时自动探测各直播源，菜单项按状态着色：**绿色**=可播放（Live）、**青色**=可播放（VOD）、**灰色**=不可播放、**黄色**=探测失败/未知；VOD 类（选项 8 / あ / う / え）不探测，固定以青色标注 `[VOD]`。
+- 启动（及每次播放结束返回菜单）时自动探测各直播源，菜单项按状态着色：**绿色**=可播放（Live）、**青色**=可播放（VOD）、**灰色**=不可播放、**黄色**=探测失败/未知；VOD 类（选项 い–か）不探测，固定以青色标注 `[VOD]`。
 - 选项 0：先进入六色频道二级菜单（`1`–`6` 即选即播，颜色仅作显示；`q` 返回主菜单）；六色中任一频道在线，主菜单该项为绿色，否则为灰色。
 - 选择后前台播放：`mpv` 按 `q` 结束播放并回到菜单；在菜单输入 `q` 退出整个脚本；`Ctrl+C` 直接结束脚本。
 

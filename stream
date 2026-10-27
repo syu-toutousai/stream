@@ -25,11 +25,12 @@ COLOR_VOD=$'\033[1;36m'       # 再生可(VOD)
 COLOR_OFF=$'\033[2;37m'       # 再生不可
 COLOR_UNKNOWN=$'\033[1;33m'   # 判定不能
 
-NAMES=("不求人" "Suk" "雨果" "潮州交通音乐广播FM91.4" "晚玉阿" "PEL和平精英赛事" "清宁" "Japanese Everyday(おまかせ日本語)" "NHKワールド・ラジオ日本" "Japanese Girls Interview(おまかせ)" "M（A妹）" "Jiro, just Japanese" "Bite size Japanese" "TBS NEWS DIG(24hニュース)")
+# 並び: 生放送(ゲーム→ラジオ→ニュース) → VOD(日本語学習)
+NAMES=("不求人" "Suk" "雨果" "晚玉阿" "清宁" "M（A妹）" "PEL和平精英赛事" "潮州交通音乐广播FM91.4" "NHKワールド・ラジオ日本" "TBS NEWS DIG(24hニュース)" "Japanese Everyday(おまかせ日本語)" "Japanese Girls Interview(おまかせ)" "Jiro, just Japanese" "Bite size Japanese" "Akiko_Japanese_Conversations(おまかせ)")
 # 探测目标:huya:<房间号> / douyin:<web_rid> / radio / nhk / ytlive:<動画ID> / vod(不探测)
-KEYS=(douyin:933572413882 huya:791120 huya:52009 radio douyin:401770194155 huya:660006 douyin:618168030518 vod nhk vod douyin:856781106190 vod vod ytlive:Anr15FA9OCI)
-# 9番目以降のカナ選択肢(9→あ, 10→い, 11→う, 12→え, 13→お)
-KANA=(あ い う え お)
+KEYS=(douyin:933572413882 huya:791120 huya:52009 douyin:401770194155 douyin:618168030518 douyin:856781106190 huya:660006 radio nhk ytlive:Anr15FA9OCI vod vod vod vod vod)
+# 9番目以降のカナ選択肢(9→あ, 10→い, 11→う, 12→え, 13→お, 14→か)
+KANA=(あ い う え お か)
 
 probe_huya() { # $1=房间号
   local out
@@ -187,11 +188,11 @@ while :; do
       else
         printf ' %d) %s\n' "$((i + 1))" "${LABELS[$i]}"
       fi
+      [ "$i" -eq 8 ] && printf ' 0) ゆめのたね放送局(色を選ぶ) %s[%s]%s\n' "$YNT_COLOR" "$YNT_LABEL" "$COLOR_RESET"
     done
-    printf ' 0) ゆめのたね放送局(色を選ぶ) %s[%s]%s\n' "$YNT_COLOR" "$YNT_LABEL" "$COLOR_RESET"
     read -r -p "$PS3" REPLY
     case "$REPLY" in
-      [1-9]|0|あ|a|A|い|i|I|う|u|U|え|e|E|お|o|O|q|Q) break ;;
+      [1-9]|0|あ|a|A|い|i|I|う|u|U|え|e|E|お|o|O|か|k|K|q|Q) break ;;
       "") ;;
       *) echo "そんなのないよ" ;;
     esac
@@ -201,18 +202,19 @@ while :; do
     2) "$SCRIPT" "huya.com/791120" best "2385:1080" \
          '--vf=lavfi=[split=2[a][b];[a]scale=2385:1080[x];[b]crop=334:188:0:892,scale=415:234[c];[x][c]overlay=0:846]' ;;
     3) "$SCRIPT" "huya.com/52009" best ;;
-    4) "$RADIO_SCRIPT" ;;
-    5) "$SCRIPT" "https://live.douyin.com/401770194155" best ;;
-    6) "$SCRIPT" "huya.com/660006" best ;;
-    7) "$SCRIPT" "https://live.douyin.com/618168030518" best ;;
-    8) "$YT_SCRIPT" "https://www.youtube.com/@JapaneseEveryday" ;;
+    4) "$SCRIPT" "https://live.douyin.com/401770194155" best ;;
+    5) "$SCRIPT" "https://live.douyin.com/618168030518" best ;;
+    6) "$SCRIPT" "https://live.douyin.com/856781106190" best ;;
+    7) "$SCRIPT" "huya.com/660006" best ;;
+    8) "$RADIO_SCRIPT" ;;
     9) "$NHK_SCRIPT" ;;
     0) choose_yumenotane ;;
-    あ|a|A) "$YT_SCRIPT" "https://www.youtube.com/@Japanesegirlsinterview" ;;
-    い|i|I) "$SCRIPT" "https://live.douyin.com/856781106190" best ;;
-    う|u|U) "$YT_SCRIPT" "https://www.youtube.com/@JiroJapanese" ;;
-    え|e|E) "$YT_SCRIPT" "https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw" ;;
-    お|o|O) "$SCRIPT" "https://www.youtube.com/watch?v=Anr15FA9OCI" best ;;
+    あ|a|A) "$SCRIPT" "https://www.youtube.com/watch?v=Anr15FA9OCI" best ;;
+    い|i|I) "$YT_SCRIPT" "https://www.youtube.com/@JapaneseEveryday" ;;
+    う|u|U) "$YT_SCRIPT" "https://www.youtube.com/@Japanesegirlsinterview" ;;
+    え|e|E) "$YT_SCRIPT" "https://www.youtube.com/@JiroJapanese" ;;
+    お|o|O) "$YT_SCRIPT" "https://www.youtube.com/channel/UCc8QJqwkWe9RcKYZTY2Ezuw" ;;
+    か|k|K) "$YT_SCRIPT" "https://www.youtube.com/@Aki-SenseiJPN" ;;
     q|Q) exit 0 ;;
   esac
   # 播放结束(或二级菜单返回) → 外层循环继续,重新探测并显示菜单
